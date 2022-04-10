@@ -1,25 +1,29 @@
-//         case 'leave': {
-//     if (!permissionsMet(user, 'caster'))
-//         return client.say(channel, 'You don\'t have permission for this!');
+import { CommandOptions } from "../utils/command-options.js"
 
-//     if (!args[0])
-//         return client.say(channel, 'Cannot detect a channel to leave');
+export default {
+    name: 'leave',
+    permission: 'owner',
+    /**
+     * 
+     * @param {CommandOptions} opts 
+     */
+    run: (opts) =>
+    {
+        if (!opts.msgText)
+            return;
 
-//     let success = [];
-//     let fail = [];
+        try
+        {
+            opts.client.part(opts.args[0]).then(c =>
+            {
+                opts.client.say(opts.channel, 'Left ' + c)
+            })
+        } catch (e)
+        {
+            console.log('Failed to leave channel:', opts.args[0]);
+            opts.client.say(opts.channel, 'Failed to leave channel: ' + opts.args[0])
+        }
+    }
+}
 
-//     for (const c of args)
-//     {
-//         const alreadyLeft = !client.getChannels().includes(c);
-//         if (alreadyLeft)
-//         {
-//             fail.push(c);
-//             continue;
-//         }
-//         await client.part(c);
-//         success.push(c)
-
-//     }
-//     chatResponse = `Left channel(s): ${success && success.length > 1 ? success.join(', ') : (success[0] || 'None')} || Failed: ${fail && fail.length > 1 ? fail.join(', ') : (fail[0] || 'None')}`
-//     break;
-// }
+// TODO: Setup channel tracking/storing in mongo

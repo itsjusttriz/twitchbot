@@ -1,25 +1,29 @@
-//         case 'join': {
-//     if (!permissionsMet(user, 'caster'))
-//         return client.say(channel, 'You don\'t have permission for this!');
+import { CommandOptions } from "../utils/command-options.js"
 
-//     if (!args[0])
-//         return client.say(channel, 'Cannot detect a channel to join');
+export default {
+    name: 'join',
+    permission: 'owner',
+    /**
+     * 
+     * @param {CommandOptions} opts 
+     */
+    run: (opts) =>
+    {
+        if (!opts.msgText)
+            return;
 
-//     let success = [];
-//     let fail = [];
+        try
+        {
+            opts.client.join(opts.args[0]).then(c =>
+            {
+                opts.client.say(opts.channel, 'Joined ' + c)
+            })
+        } catch (e)
+        {
+            console.log('Failed to join channel:', opts.args[0]);
+            opts.client.say(opts.channel, 'Failed to join channel: ' + opts.args[0])
+        }
+    }
+}
 
-//     for (const c of args)
-//     {
-//         const alreadyJoined = client.getChannels().includes(c);
-//         if (alreadyJoined)
-//         {
-//             fail.push(c);
-//             continue;
-//         }
-//         await client.join(c);
-//         success.push(c)
-
-//     }
-//     chatResponse = `Joined channel(s): ${success && success.length > 1 ? success.join(', ') : (success[0] || 'None')} || Failed: ${fail && fail.length > 1 ? fail.join(', ') : (fail[0] || 'None')}`
-//     break;
-// }
+// TODO: Setup channel tracking/storing in mongo
