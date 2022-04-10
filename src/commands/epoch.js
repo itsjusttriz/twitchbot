@@ -1,13 +1,23 @@
-//         case 'epoch':
-// if (!permissionsMet(user, 'all'))
-//     return client.say(channel, 'You don\'t have permission for this!');
+import { CommandOptions } from "../utils/command-options.js";
 
-// if (!args.length)
-//     return client.say(channel, 'Cannot find time string in your message.');
+export default {
+    name: 'epoch',
+    permission: '*',
 
-// const reg = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
-// if (!reg.test(args.join(' ')))
-//     return client.say(channel, 'Your input does not meet timestring requirements e.g. yyyy-mm-ddT07:00')
+    /**
+     * 
+     * @param {CommandOptions} opts 
+     */
+    run: (opts) =>
+    {
+        if (!opts.msgText)
+            return;
 
-// chatResponse = new Date(args.join(' ')).getTime() / 1000;
-// break;
+        const regex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
+        if (!regex.test(opts.msgText))
+            return opts.client.say(opts.channel, 'Invalid Timestamp. Format must be: yyyy-mm-ddT07:00');
+
+        const epoch = new Date(opts.msgText).getTime() / 1000;
+        opts.client.say(opts.channel, epoch.toString());
+    }
+}
