@@ -1,0 +1,19 @@
+{
+  "name": "trizutils-twitch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node --experimental-json-modules .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@twurple/auth": "^5.0.10",
+    "@twurple/auth-tmi": "^5.0.10",
+    "tmi.js": "^1.8.5"
+  }
+}
