@@ -1,14 +1,16 @@
 import { CommandOptions } from "../utils/command-options.js"
 
 export default {
-    name: 'test',
-    permission: '*',
+    name: 'echo',
+    permission: 'owner',
     /**
      * 
      * @param {CommandOptions} opts 
      */
     run: (opts) =>
     {
-        opts.client.say(opts.channel, 'Test failed Kappa')
+        if (!opts.msgText)
+            return;
+        opts.client.say(opts.channel, opts.msgText)
     }
 }

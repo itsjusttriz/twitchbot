@@ -1,10 +1,20 @@
 import { hasPermission } from "../utils/check-command-permissions.js";
 import { CommandOptions } from "../utils/command-options.js";
-import fs from 'fs';
+import { ExtendedClient } from "../utils/auth-provider.js";
 
 export default {
     name: 'message',
     once: false,
+
+    /**
+     * 
+     * @param {string} channel 
+     * @param {import("tmi.js").ChatUserstate} tags 
+     * @param {string} msg 
+     * @param {boolean} self 
+     * @param {ExtendedClient} client 
+     * @returns 
+     */
     run: async (channel, tags, msg, self, client) =>
     {
         // TODO: Improve this.
@@ -17,18 +27,12 @@ export default {
             return client.whisper(tags.username, 'Commands are not functional via whispers. Please try again, in a mutually connected channel.');
 
         const opts = new CommandOptions(channel, tags, msg, self, client)
+        const cmd = client.commands.get(opts.command);
+        if (cmd?.name !== opts.command)
+            return;
+        if (!hasPermission(tags, cmd.permission))
+            return;
 
-        const cmdFiles = fs.readdirSync('./src/commands').filter(f => f.endsWith('.js'));
-        for (const file of cmdFiles)
-        {
-            const { default: cmd } = await import(`../commands/${file}`);
-
-            if (cmd?.name !== opts.command)
-                return;
-            if (!hasPermission(tags, cmd.permission))
-                return;
-
-            cmd.run(opts).catch(console.error);
-        }
+        cmd.run(opts)
     }
 }

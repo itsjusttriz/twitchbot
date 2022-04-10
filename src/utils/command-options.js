@@ -1,4 +1,4 @@
-import { Client } from "@twurple/auth-tmi";
+import { ExtendedClient } from "./auth-provider.js";
 
 export class CommandOptions
 {
@@ -8,7 +8,7 @@ export class CommandOptions
      * @param {import("tmi.js").ChatUserstate} tags 
      * @param {string} msg 
      * @param {boolean} self 
-     * @param {Client} client 
+     * @param {ExtendedClient} client 
      */
     constructor(channel, tags, msg, self, client)
     {
@@ -22,5 +22,6 @@ export class CommandOptions
         //? Custom Properties.
         this.args = (this.msg).slice(1).split(' ');
         this.command = (this.args).shift().toLowerCase();
+        this.msgText = (this.args).join(' ');
     }
 }
