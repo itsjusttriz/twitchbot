@@ -4,12 +4,10 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node --experimental-json-modules .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --experimental-json-modules ."
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "author": "itsjusttriz",
   "license": "ISC",
   "dependencies": {
     "@twurple/auth": "^5.0.10",
