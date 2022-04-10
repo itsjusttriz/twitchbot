@@ -3,7 +3,9 @@ export default {
     once: true,
     run: (address, port, client) =>
     {
-        console.info('Connected to:', { address, port });
+        console.table([{ address, port }])
+        console.info('Connected!');
+
         client.join('itsjusttriz')
     }
 }
