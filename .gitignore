@@ -1,3 +1,3 @@
 node_modules
-src/tokens.json
 src/config.json
+tokens.json
