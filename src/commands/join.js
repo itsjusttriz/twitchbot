@@ -1,4 +1,5 @@
-import { CommandOptions } from "../utils/command-options.js"
+import fetch from "node-fetch";
+import { CommandOptions } from "../utils/command-options.js";
 
 export default {
     name: 'join',
@@ -7,23 +8,30 @@ export default {
      * 
      * @param {CommandOptions} opts 
      */
-    run: (opts) =>
+    run: async (opts) =>
     {
         if (!opts.msgText)
             return;
 
-        try
+        for (const c of opts.args)
         {
-            opts.client.join(opts.args[0]).then(c =>
-            {
-                opts.client.say(opts.channel, 'Joined ' + c)
-            })
-        } catch (e)
-        {
-            console.log('Failed to join channel:', opts.args[0]);
-            opts.client.say(opts.channel, 'Failed to join channel: ' + opts.args[0])
+            opts.client.join(c)
+                .catch(e =>
+                {
+                    console.log('Failed to join channel:', opts.args[0]);
+                    console.error(e)
+                    opts.client.say(opts.channel, 'Failed to join channel: ' + opts.args[0])
+                })
         }
+        const stored = await storeChannels(opts.args);
+        if (!stored)
+            return opts.client.say(opts.channel, 'Failed to store channels.')
     }
 }
 
-// TODO: Setup channel tracking/storing in mongo
+async function storeChannels(arr)
+{
+    const qs = new URLSearchParams({ channels: arr.join('|') });
+    const api = await fetch(`https://api.itsjusttriz.com/twitch/twitch-bot-channels?${qs}`, { method: 'POST' });
+    return api.status === 200;
+}
