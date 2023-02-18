@@ -2,12 +2,12 @@ import { RefreshingAuthProvider } from '@twurple/auth';
 import { BasicObjectProps } from '@itsjusttriz/utils';
 import { promises as fsp } from 'fs';
 import config from '../config.json';
-import { DecoratedClient, Client } from '@twurple/auth-tmi/lib/client';
+import { Client } from '@twurple/auth-tmi';
 
 export class IJTTwitchClient {
     commands: Map<string, BasicObjectProps>;
     private _cachedAuthProvider: Promise<RefreshingAuthProvider>;
-    private _cachedChatClient: Promise<DecoratedClient>;
+    private _cachedChatClient: Promise<Client>;
 
     constructor() {
         this.commands = new Map();
