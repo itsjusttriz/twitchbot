@@ -29,7 +29,7 @@ export default {
             `Created by ${pack.dev}.`,
             `Known Status: ${pack.type}.`,
 
-            (!pack.launcher && !pack.link) ? `Found here: ${pack.link}` : ''
+            (pack.launcher || pack.link) ? `Found here: ${pack.link}` : ''
         ].join(' ');
 
         (await opts.getChatClient()).say(opts.channel, msg);

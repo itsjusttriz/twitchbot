@@ -19,5 +19,5 @@ export default {
 
 // TODO: Swap this for SQLite config.
 function getChannelConfig(channel: string) {
-    return new Promise((res, rej) => rej(`[event.join] Config for ${channel}, not found.`));
+    return new Promise((res, rej) => rej(`\n[event.join] Config for ${channel}, not found.`));
 }

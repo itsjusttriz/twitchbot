@@ -14,15 +14,15 @@ export class IJTTwitchClient {
     }
 
     private async _createAuthProvider() {
-        const tokenData = JSON.parse(await fsp.readFile('./tokens.json', 'utf8'));
-        return new RefreshingAuthProvider(
-            {
-                clientId: config?.CLIENT_ID || process.env?.CLIENT_ID,
-                clientSecret: config?.CLIENT_SECRET || process.env?.CLIENT_SECRET,
-                onRefresh: async newTokenData => await fsp.writeFile('./tokens.json', JSON.stringify(newTokenData), 'utf8')
-            },
-            tokenData
-        );
+        const tokenData = JSON.parse(await fsp.readFile('./tokens.127667640.json', 'utf8'));
+        const authProvider = new RefreshingAuthProvider({
+            clientId: config?.CLIENT_ID || process.env?.CLIENT_ID,
+            clientSecret: config?.CLIENT_SECRET || process.env?.CLIENT_SECRET,
+            onRefresh: async (userId, newTokenData) => await fsp.writeFile(`./tokens.${userId}.json`, JSON.stringify(newTokenData), 'utf8')
+        });
+
+        authProvider.addUser('127667640', tokenData, ['chat']);
+        return authProvider;
     }
 
     async getAuthProvider() {

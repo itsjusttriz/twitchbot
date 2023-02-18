@@ -14,7 +14,7 @@ export default {
         const regex = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
 
         if (!regex.test(opts.msgText)) {
-            (await opts.getChatClient()).say(opts.channel, 'Invalid Timestamp. Format must be: yyyy-mm-ddT07:00');
+            (await opts.getChatClient()).say(opts.channel, 'Invalid Timestamp. Format must be: yyyy-mm-ddTHH:MM');
             return;
         }
 

@@ -4,7 +4,8 @@ export default {
     name: 'connected',
     once: true,
     run: async (address: string, port: number, client: IJTTwitchClient) => {
-        [{ address, port }, 'Connected!'].forEach(console.info);
+        console.log('Connected!')
+        console.table([{ address, port }]);
 
         const channels = ['itsjusttriz', 'trizutils'];
         for (const c of channels) {
