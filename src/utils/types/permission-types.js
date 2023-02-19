@@ -1,1 +1,0 @@
-export const PermissionTypes = 'owner' | 'caster' | 'mod' | 'sub' | '*';
