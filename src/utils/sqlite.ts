@@ -25,6 +25,16 @@ export const getJoinableChannels = async () => {
     return (await stmt).all();
 }
 
+export const addChannelToStoredChannels = async (channel: string) => {
+    const stmt = (await getDB()).prepare(`INSERT OR REPLACE INTO connected_channels (name, blacklisted) VALUES (?, 0)`);
+    return (await stmt).run(channel);
+}
+
+export const updateBlacklistedChannels = async (blacklist: boolean, channel: string) => {
+    const stmt = (await getDB()).prepare(`UPDATE connected_channels SET blacklisted=? WHERE name = ?`);
+    return (await stmt).run(!blacklist ? 0 : 1, channel);
+}
+
 // TODO: Test this.
 export const addIdToChannel = async (id: string) => {
     const stmt = (await getDB()).prepare(`INSERT INTO ${TableNames.CONNECTED_CHANNELS} (id) VALUES (?) WHERE id NOT EXISTS`);
