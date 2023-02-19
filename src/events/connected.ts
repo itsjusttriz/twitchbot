@@ -1,3 +1,4 @@
+import { joinChannelsOnStartup } from "../helper/join-channels-on-startup";
 import { IJTTwitchClient } from "../utils/auth-provider";
 
 export default {
@@ -7,14 +8,9 @@ export default {
         console.log('Connected!')
         console.table([{ address, port }]);
 
-        const channels = ['itsjusttriz', 'trizutils'];
-        for (const c of channels) {
-            await (await client.getChatClient()).join(c).catch(e => {
-                console.warn(`[Error] Failed to join ${c}: ` + e);
-            });
-        }
-
-        // TODO: Fix this.
-        console.warn('[Error] Failed fetching channel-join list from database.');
+        await joinChannelsOnStartup(client).catch(e => {
+            console.warn(`[Error] Failed to run joinChannels(): ` + e);
+        });
+        return;
     }
 }
