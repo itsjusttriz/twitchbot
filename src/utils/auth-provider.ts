@@ -18,7 +18,7 @@ export class IJTTwitchClient {
         const authProvider = new RefreshingAuthProvider({
             clientId: config?.CLIENT_ID || process.env?.CLIENT_ID,
             clientSecret: config?.CLIENT_SECRET || process.env?.CLIENT_SECRET,
-            onRefresh: async (userId, newTokenData) => await fsp.writeFile(`./tokens.${userId}.json`, JSON.stringify(newTokenData), 'utf8')
+            onRefresh: async (userId, newTokenData) => await fsp.writeFile(`./tokens.${userId}.json`, JSON.stringify(newTokenData, null, 4), 'utf8')
         });
 
         authProvider.addUser('127667640', tokenData, ['chat']);
