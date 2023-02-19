@@ -11,6 +11,7 @@ export class CommandOptions {
     args: string[];
     command: string;
     msgText: string;
+    user: string;
 
     constructor(channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) {
         //? Initial properties.
@@ -24,7 +25,10 @@ export class CommandOptions {
         this.args = (this.msg).slice(1).split(' ');
         this.command = (this.args).shift().toLowerCase();
         this.msgText = (this.args).join(' ');
+        this.user = (this.tags).username;
     }
+
+    // TODO: Create mention clause, channel-based config dependant.
 
     async getChatClient() {
         return await client.getChatClient();
