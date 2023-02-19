@@ -8,7 +8,8 @@ export default {
     once: false,
 
     run: async (channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) => {
-        // TODO: Improve this.
+
+        // ? Improve this.
         console.log([channel, self ? 'SELF' : '@' + tags['username'], msg].join(' | '));
 
         if (self || !msg.startsWith('!'))
