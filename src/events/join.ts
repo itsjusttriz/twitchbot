@@ -1,3 +1,4 @@
+import { ITime } from "@itsjusttriz/utils";
 import { updateStoredChannels } from "../helper/update-stored-channels";
 import { IJTTwitchClient } from "../utils/auth-provider";
 
@@ -10,7 +11,7 @@ export default {
             return;
 
         // (await client.getChatClient()).say('itsjusttriz', `Joined ${channel}`);
-        console.info('Joined', channel);
+        console.info(ITime.formatNow('short'), `| Joined ${channel}`);
 
         await updateStoredChannels(channel.replace('#', ''), 'ADD').catch(e => {
             console.warn(`[Error] Failed to run updateStoredChannels()#ADD: ` + e);

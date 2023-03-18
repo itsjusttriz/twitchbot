@@ -3,6 +3,7 @@ import { Permissions } from "../utils/types/permissions-type.js";
 
 export default {
     name: 'epoch',
+    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.REGULAR,
 
     run: async (opts: CommandOptions) => {

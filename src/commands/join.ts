@@ -3,6 +3,7 @@ import { Permissions } from "../utils/types/permissions-type.js";
 
 export default {
     name: 'join',
+    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.OWNER,
 
     run: async (opts: CommandOptions) => {

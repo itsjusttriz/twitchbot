@@ -4,6 +4,7 @@ import { Permissions } from "../utils/types/permissions-type.js";
 
 export default {
     name: 'getpack',
+    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.MODERATOR,
 
     run: async (opts: CommandOptions) => {

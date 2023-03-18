@@ -4,6 +4,7 @@ import { mathApi } from "../services/decapi/math.js";
 
 export default {
     name: 'calc',
+    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.MODERATOR,
 
     run: async (opts: CommandOptions) => {

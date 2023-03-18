@@ -1,3 +1,4 @@
+import { ITime } from "@itsjusttriz/utils";
 import { ChatUserstate } from "tmi.js";
 import { IJTTwitchClient } from "../utils/auth-provider.js";
 import { hasPermission } from "../utils/check-command-permissions.js";
@@ -10,7 +11,12 @@ export default {
     run: async (channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) => {
 
         // ? Improve this.
-        console.log([channel, self ? 'SELF' : '@' + tags['username'], msg].join(' | '));
+        console.log([
+            ITime.formatNow('short'),
+            channel,
+            self ? 'SELF' : '@' + tags['username'],
+            msg
+        ].join(' | '));
 
         if (self || !msg.startsWith('!'))
             return;
@@ -27,9 +33,18 @@ export default {
 
         if (cmd?.name !== opts.command)
             return;
-        if (!hasPermission(tags, cmd.permission))
+        if (!hasPermission(tags, cmd.permission)) {
+            // TODO: Add logger.
             return;
-
+        }
+        if (cmd?.blacklisted_channels?.length && cmd?.blacklisted_channels?.includes(channel.replaceAll('#', ''))) {
+            // TODO: Add logger.
+            return;
+        }
+        if (cmd?.whitelisted_channels?.length && !cmd?.whitelisted_channels?.includes(channel.replaceAll('#', ''))) {
+            // TODO: Add logger.
+            return;
+        }
         cmd.run(opts);
     }
 }

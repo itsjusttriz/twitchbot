@@ -2,6 +2,9 @@ import fetch from "node-fetch";
 
 const API_BASE_URL = 'https://decapi.me/math/';
 
+/**
+ * Calls to https://decapi.me/math and returns result of mathematical equation given by {expression}.
+ */
 export async function mathApi(expression: string) {
     return await fetch(`${API_BASE_URL}?exp=${encodeURIComponent(expression)}`, {
         headers: {

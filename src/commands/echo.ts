@@ -3,6 +3,7 @@ import { Permissions } from "../utils/types/permissions-type.js";
 
 export default {
     name: 'echo',
+    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.OWNER,
 
 
