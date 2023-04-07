@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 import { Database, open } from 'sqlite';
-import { TableNames } from './types/sql-table-names';
+import { TableNames } from './enums/sql-table-names';
 
 let _cachedDatabase: Promise<Database<sqlite3.Database, sqlite3.Statement>>;
 
@@ -26,12 +26,12 @@ export const getJoinableChannels = async () => {
 }
 
 export const addChannelToStoredChannels = async (channel: string) => {
-    const stmt = (await getDB()).prepare(`INSERT OR REPLACE INTO connected_channels (name, blacklisted) VALUES (?, 0)`);
+    const stmt = (await getDB()).prepare(`INSERT OR REPLACE INTO ${TableNames.CONNECTED_CHANNELS} (name, blacklisted) VALUES (?, 0)`);
     return (await stmt).run(channel);
 }
 
 export const updateBlacklistedChannels = async (blacklist: boolean, channel: string) => {
-    const stmt = (await getDB()).prepare(`UPDATE connected_channels SET blacklisted=? WHERE name = ?`);
+    const stmt = (await getDB()).prepare(`UPDATE ${TableNames.CONNECTED_CHANNELS} SET blacklisted=? WHERE name = ?`);
     return (await stmt).run(!blacklist ? 0 : 1, channel);
 }
 

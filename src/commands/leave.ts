@@ -1,12 +1,13 @@
-import { isCasterOrAbove, isOwner } from "../utils/check-command-permissions.js";
-import { CommandOptions } from "../utils/command-options.js"
-import { Permissions } from "../utils/types/permissions-type.js";
+import { isOwner } from "../utils/check-command-permissions.js";
+import { Command } from "../utils/interfaces/Command.js";
+import { Permissions } from "../utils/enums/permissions-type.js";
 
-export default {
+export const command = {
     name: 'leave',
     permission: Permissions.OWNER,
+    requiresInput: true,
 
-    run: async (opts: CommandOptions) => {
+    run: async opts => {
         /**
          * Check if the command runner is the bot owner. If yes, leave following channels.
          *  If not, check if command runner is the caster. If yes, leave user's channel.
@@ -21,20 +22,20 @@ export default {
             );
 
         if (!channelsToLeave && !opts.msgText) {
-            (await opts.getChatClient()).say(opts.channel, 'No channel(s) detected. Try again!');
+            opts.chatClient.say(opts.channel, 'No channel(s) detected. Try again!');
             return;
         }
 
         for (const c of channelsToLeave) {
-            (await opts.getChatClient()).part(c)
+            opts.chatClient.part(c)
                 .then(async c => {
-                    (await opts.getChatClient()).say(opts.channel, `@${opts.user} -> Leaving ${c}`);
+                    opts.chatClient.say(opts.channel, `@${opts.user} -> Leaving ${c}`);
                 })
                 .catch(async e => {
                     console.warn(`[Error] Failed to leave ${c}: ` + e);
-                    (await opts.getChatClient()).say(opts.channel, 'Failed to leave channel: ' + c);
+                    opts.chatClient.say(opts.channel, 'Failed to leave channel: ' + c);
                 });
         }
         return;
     }
-}
+} as Command;

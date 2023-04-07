@@ -1,5 +1,5 @@
 import { addChannelToStoredChannels, updateBlacklistedChannels } from "../utils/sqlite";
-import { AddOrRemoveChannel } from "../utils/types/add-or-remove-channel";
+import { AddOrRemoveChannel } from "../utils/enums/add-or-remove-channel";
 
 export async function updateStoredChannels(channel: string, action: keyof typeof AddOrRemoveChannel) {
 

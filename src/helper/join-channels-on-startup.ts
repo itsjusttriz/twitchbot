@@ -1,9 +1,11 @@
-import { IJTTwitchClient } from "../utils/auth-provider";
+import { IJTTwitchClient } from "../controllers/IJTClient";
 import { getJoinableChannels } from "../utils/sqlite";
 
 const DEFAULT_CHANNELS = ['itsjusttriz', 'trizutils'];
 
 export async function joinChannelsOnStartup(client: IJTTwitchClient) {
+    const { chat } = client;
+
     let storedChannels = await getJoinableChannels().catch(e => {
         console.warn(`[Error] Failed to run getJoinableChannels(): ` + e);
         return null;
@@ -16,7 +18,7 @@ export async function joinChannelsOnStartup(client: IJTTwitchClient) {
 
     const channels = storedChannels.length < 1 ? DEFAULT_CHANNELS : storedChannels;
     for (const c of channels) {
-        await (await client.getChatClient()).join(c).catch(e => {
+        chat.join(c).catch(e => {
             console.warn(`[Error] Failed to join ${c}: ` + e);
         });
     }

@@ -1,32 +1,32 @@
 import { ChatUserstate } from "tmi.js";
-import { Permissions } from "./types/permissions-type";
+import { Permissions } from "./enums/permissions-type";
 
-export async function isSubOrAbove(tags: ChatUserstate) {
-    return !!tags['subscriber'] || !!tags['badges']?.['subscriber'] || !!tags['badges']?.['founder'] || await isModOrAbove(tags);
+export function isSubOrAbove(tags: ChatUserstate) {
+    return !!tags['subscriber'] || !!tags['badges']?.['subscriber'] || !!tags['badges']?.['founder'] || isModOrAbove(tags);
 }
 
-export async function isModOrAbove(tags: ChatUserstate) {
-    return !!tags['mod'] || !!tags['badges']?.['moderator'] || await isCasterOrAbove(tags);
+export function isModOrAbove(tags: ChatUserstate) {
+    return !!tags['mod'] || !!tags['badges']?.['moderator'] || isCasterOrAbove(tags);
 }
 
-export async function isCasterOrAbove(tags: ChatUserstate) {
-    return !!tags['badges']?.['broadcaster'] || tags['room-id'] === tags['user-id'] || await isOwner(tags);
+export function isCasterOrAbove(tags: ChatUserstate) {
+    return !!tags['badges']?.['broadcaster'] || tags['room-id'] === tags['user-id'] || isOwner(tags);
 }
 
-export async function isOwner(tags: ChatUserstate) {
-    return tags['user-id'] === '127667640';
+export function isOwner(tags: ChatUserstate) {
+    return [tags.id, tags['user-id']].includes('127667640');
 }
 
-export async function getPermissions(tags: ChatUserstate) {
+export function getPermissions(tags: ChatUserstate) {
     return {
-        [Permissions.OWNER]: await isOwner(tags),
-        [Permissions.CASTER]: await isCasterOrAbove(tags),
-        [Permissions.MODERATOR]: await isModOrAbove(tags),
-        [Permissions.SUBSCRIBER]: await isSubOrAbove(tags),
+        [Permissions.OWNER]: isOwner(tags),
+        [Permissions.CASTER]: isCasterOrAbove(tags),
+        [Permissions.MODERATOR]: isModOrAbove(tags),
+        [Permissions.SUBSCRIBER]: isSubOrAbove(tags),
         [Permissions.REGULAR]: true
     }
 }
 
-export async function hasPermission(tags: ChatUserstate, reqPerm: Permissions) {
-    return await getPermissions(tags)[reqPerm];
+export function hasPermission(tags: ChatUserstate, reqPerm: Permissions) {
+    return getPermissions(tags)[reqPerm];
 }

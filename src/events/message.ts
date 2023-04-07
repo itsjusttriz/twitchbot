@@ -1,18 +1,21 @@
 import { ITime } from "@itsjusttriz/utils";
 import { ChatUserstate } from "tmi.js";
-import { IJTTwitchClient } from "../utils/auth-provider.js";
+import { IJTTwitchClient } from "../controllers/IJTClient.js";
 import { hasPermission } from "../utils/check-command-permissions.js";
-import { CommandOptions } from "../utils/command-options.js";
+import { MessageOptions } from "../utils/MessageOptions.js";
+import { Event } from "../utils/interfaces/Event.js";
 
-export default {
+export const event = {
     name: 'message',
     once: false,
 
     run: async (channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) => {
+        const { chat } = client;
 
         // ? Improve this.
         console.log([
             ITime.formatNow('short'),
+            client.settings.debug ? '[DEBUG-MODE]' : '',
             channel,
             self ? 'SELF' : '@' + tags['username'],
             msg
@@ -21,30 +24,30 @@ export default {
         if (self || !msg.startsWith('!'))
             return;
 
-        if (tags['message-type'] === 'whisper') {
-            (await client.getChatClient()).whisper(tags.username, 'Commands are not functional via whispers. Please try again, in a mutually connected channel.').catch(e => {
-                console.warn(`Failed to whisper ${tags.username}: ` + e);
-            });
-            return;
-        }
-
-        const opts = new CommandOptions(channel, tags, msg, self, client);
+        const opts = new MessageOptions(channel, tags, msg, self, client);
         const cmd = client.commands.get(opts.command);
 
         if (cmd?.name !== opts.command)
             return;
-        if (!hasPermission(tags, cmd.permission)) {
-            // TODO: Add logger.
+        if (!hasPermission(tags, cmd.permission))
+            return;
+        if (cmd?.blacklisted_channels?.length && cmd?.blacklisted_channels?.includes(channel.replaceAll('#', '')))
+            return;
+        if (cmd?.whitelisted_channels?.length && !cmd?.whitelisted_channels?.includes(channel.replaceAll('#', '')))
+            return;
+        if (cmd?.whitelisted_users && !cmd?.whitelisted_users.includes(opts.user))
+            return;
+
+        if (cmd?.requiresInput && !opts.msgText) {
+            chat.say(opts.channel, `${opts.user} -> This command requires input. Try again!`);
             return;
         }
-        if (cmd?.blacklisted_channels?.length && cmd?.blacklisted_channels?.includes(channel.replaceAll('#', ''))) {
-            // TODO: Add logger.
+
+        if (cmd?.maxArgs && opts.args.length > cmd.maxArgs) {
+            chat.say(opts.channel, `${opts.user} -> ${cmd.max_args_error_message || 'Too many arguments. Try again!'}`);
             return;
         }
-        if (cmd?.whitelisted_channels?.length && !cmd?.whitelisted_channels?.includes(channel.replaceAll('#', ''))) {
-            // TODO: Add logger.
-            return;
-        }
+
         cmd.run(opts);
     }
-}
+} as Event;

@@ -1,34 +1,33 @@
 import { ITime } from "@itsjusttriz/utils";
-import { CommandOptions } from "../utils/command-options.js";
-import { Permissions } from "../utils/types/permissions-type.js";
+import { Permissions } from "../utils/enums/permissions-type.js";
+import { Command } from "../utils/interfaces/Command.js";
 
-export default {
+/**
+* 
+* This command is stritcly used for the StackUpDotOrg channel for when Finncapp is live on the ChromaCage MC server.
+*/
+
+export const command = {
     name: 'drops',
-    whitelisted_channels: ['stackupdotorg'],
     permission: Permissions.REGULAR,
+    requiresInput: false,
 
-    /**
-     * 
-     * This command is stritcly used for the StackUpDotOrg channel for when Finncapp is live on the ChromaCage MC server.
-     */
+    whitelisted_channels: ['stackupdotorg'],
+    whitelisted_users: ['finncapp', 'itsjusttriz'],
 
-    run: async (opts: CommandOptions) => {
+    run: async opts => {
+        const m = [
+            "If you haven't yet please make sure to connect your twitch to your "
+            + "MC account by using the command /twitch (twitch name) which will allow you to get drops on the server.",
 
-        if (!['finncapp', 'itsjusttriz'].includes(opts.user))
-            return;
+            "You can then use the /online command to see what streamers are on the server and live. "
+            + "It will give you a direct link to their channels to click."
+        ]
 
-        let line1 = '';
-        line1 += "If you haven't yet please make sure to connect your twitch to your ";
-        line1 += "MC account by using the command /twitch (twitch name) which will allow you to get drops on the server.";
-
-        let line2 = '';
-        line2 += "You can then use the /online command to see what streamers are on the server and live. ";
-        line2 += "It will give you a direct link to their channels to click.";
-
-        (await opts.getChatClient()).say(opts.channel, line1);
-        await ITime.wait(1000 * 2);
-        (await opts.getChatClient()).say(opts.channel, line2);
-
+        for (const line of m) {
+            opts.chatClient.say(opts.channel, line);
+            await ITime.wait(2000);
+        }
         return;
     }
-}
+} as Command;

@@ -1,8 +1,9 @@
 import { ITime } from "@itsjusttriz/utils";
 import { updateStoredChannels } from "../helper/update-stored-channels";
-import { IJTTwitchClient } from "../utils/auth-provider";
+import { IJTTwitchClient } from "../controllers/IJTClient";
+import { Event } from "../utils/interfaces/Event";
 
-export default {
+export const event = {
     name: 'part',
     once: false,
 
@@ -18,4 +19,4 @@ export default {
         });
         return;
     }
-}
+} as Event;

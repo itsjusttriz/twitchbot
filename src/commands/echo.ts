@@ -1,19 +1,13 @@
-import { CommandOptions } from "../utils/command-options.js"
-import { Permissions } from "../utils/types/permissions-type.js";
+import { Command } from "../utils/interfaces/Command.js";
+import { Permissions } from "../utils/enums/permissions-type.js";
 
-export default {
+export const command = {
     name: 'echo',
-    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.OWNER,
-
-
-    run: async (opts: CommandOptions) => {
-        if (!opts.msgText) {
-            (await opts.getChatClient()).say(opts.channel, 'No msgText detected. Try again!');
-            return;
-        }
-
-        (await opts.getChatClient()).say(opts.channel, opts.msgText);
+    requiresInput: true,
+    blacklisted_channels: ['stackupdotorg'],
+    run: async opts => {
+        opts.chatClient.say(opts.channel, opts.msgText);
         return;
     }
-}
+} as Command;

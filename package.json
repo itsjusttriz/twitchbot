@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@itsjusttriz/utils": "^1.0.9",
-    "@twurple/auth": "^6.0.0",
-    "@twurple/auth-tmi": "^6.0.0",
+    "@twurple/auth": "^6.1.0",
+    "@twurple/auth-tmi": "^6.1.0",
     "node-fetch": "^2.6.1",
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.4",

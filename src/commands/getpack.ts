@@ -1,27 +1,23 @@
 import { getPackFromApi } from "../services/ijt-api/get-modpack.js";
-import { CommandOptions } from "../utils/command-options.js";
-import { Permissions } from "../utils/types/permissions-type.js";
+import { Command } from "../utils/interfaces/Command.js";
+import { Permissions } from "../utils/enums/permissions-type.js";
 
-export default {
+export const command = {
     name: 'getpack',
-    blacklisted_channels: ['stackupdotorg'],
     permission: Permissions.MODERATOR,
-
-    run: async (opts: CommandOptions) => {
+    requiresInput: true,
+    maxArgs: 1,
+    maxArgsErrorMessage: 'Too many arguments. Try again!',
+    blacklisted_channels: ['stackupdotorg'],
+    run: async opts => {
         if (!opts.msgText) {
-            (await opts.getChatClient()).say(opts.channel, 'No id detected. Try again!');
+            opts.chatClient.say(opts.channel, 'No id detected. Try again!');
             return;
         }
-
-        if (opts.args.length > 1) {
-            (await opts.getChatClient()).say(opts.channel, 'Too many arguments. Try again!');
-            return;
-        }
-
 
         const pack = await getPackFromApi(opts.args[0]);
         if (!pack) {
-            (await opts.getChatClient()).say(opts.channel, 'Failed to fetch this modpack.');
+            opts.chatClient.say(opts.channel, 'Failed to fetch this modpack.');
             return;
         }
 
@@ -33,7 +29,7 @@ export default {
             (pack.launcher || pack.link) ? `Found here: ${pack.link}` : ''
         ].join(' ');
 
-        (await opts.getChatClient()).say(opts.channel, msg);
+        opts.chatClient.say(opts.channel, msg);
         return;
     }
-}
+} as Command;

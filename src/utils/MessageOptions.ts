@@ -1,7 +1,7 @@
 import { ChatUserstate } from "tmi.js";
-import { client, IJTTwitchClient } from "./auth-provider.js";
+import { IJTTwitchClient } from "../controllers/IJTClient.js";
 
-export class CommandOptions {
+export class MessageOptions {
     channel: string;
     tags: ChatUserstate;
     msg: string;
@@ -30,7 +30,7 @@ export class CommandOptions {
 
     // TODO: Create mention clause, channel-based config dependant.
 
-    async getChatClient() {
-        return await client.getChatClient();
+    get chatClient() {
+        return this.client.chat;
     }
 }
