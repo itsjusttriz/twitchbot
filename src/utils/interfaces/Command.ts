@@ -1,5 +1,5 @@
 import { MessageOptions } from "../MessageOptions";
-import { Permissions } from "../types/permissions-type";
+import { Permissions } from "../enums/permissions-type";
 
 export interface Command {
     name: string;
