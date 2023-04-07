@@ -44,7 +44,7 @@ export const event = {
         }
 
         if (cmd?.maxArgs && opts.args.length > cmd.maxArgs) {
-            chat.say(opts.channel, `${opts.user} -> ${cmd.max_args_error_message || 'Too many arguments. Try again!'}`);
+            chat.say(opts.channel, `${opts.user} -> ${cmd.maxArgsErrorMessage || 'Too many arguments. Try again!'}`);
             return;
         }
 
