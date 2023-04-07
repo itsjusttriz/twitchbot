@@ -36,7 +36,7 @@ export class IJTTwitchClient {
 }
 
 export const client = new IJTTwitchClient({
-    debug: true,
+    debug: false,
     disableEvents: false,
     disableCommands: false,
 });
