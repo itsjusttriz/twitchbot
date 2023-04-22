@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { client } from "./IJTClient";
-import { logger } from '../utils/Logger';
+import { LogPrefixes, logger } from '../utils/Logger';
 
 export async function loadEvents() {
     const events = fs.readdirSync(process.cwd() + '/dist/events').filter(f => f.endsWith('.js'));
@@ -9,7 +9,7 @@ export async function loadEvents() {
 
         if (client.settings.disableEvents || e.isDisabled) {
             logger
-                .setPrefix('[System/Events]')
+                .setPrefix(LogPrefixes.COLORED_EVENTS)
                 .error('Found disabled event:', e.name);
             continue;
         }

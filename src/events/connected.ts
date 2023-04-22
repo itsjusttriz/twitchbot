@@ -1,14 +1,14 @@
 import { joinChannelsOnStartup } from "../helper/join-channels-on-startup";
 import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
-import { logger } from "../utils/Logger";
+import { LogPrefixes, logger } from "../utils/Logger";
 
 export const event = {
     name: 'connected',
     once: true,
     run: async (address: string, port: number, client: IJTTwitchClient) => {
         logger
-            .setPrefix('[System/Chat]')
+            .setPrefix(LogPrefixes.CHAT_MESSAGE)
             .success('Connected to', address, '-', port)
 
         if (client.settings.debug)
@@ -16,7 +16,7 @@ export const event = {
         else
             await joinChannelsOnStartup(client).catch(e => {
                 logger
-                    .setPrefix('[Chat/Events]')
+                    .setPrefix(LogPrefixes.COLORED_EVENTS)
                     .error('Failed to run joinChannels():', e);
             });
         return;

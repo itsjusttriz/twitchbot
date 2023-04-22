@@ -1,7 +1,7 @@
 import { isOwner } from "../utils/check-command-permissions.js";
 import { Command } from "../utils/interfaces/Command.js";
 import { Permissions } from "../utils/enums/permissions-type.js";
-import { logger } from "../utils/logger.js";
+import { LogPrefixes, logger } from "../utils/Logger.js";
 
 export const command = {
     name: 'leave',
@@ -34,7 +34,7 @@ export const command = {
                 })
                 .catch(async e => {
                     logger
-                        .setPrefix('[Chat/Commands]')
+                        .setPrefix(LogPrefixes.CHAT_MESSAGE)
                         .error(`Failed to leave ${c}:`, e);
                     opts.chatClient.say(opts.channel, 'Failed to leave channel: ' + c);
                 });

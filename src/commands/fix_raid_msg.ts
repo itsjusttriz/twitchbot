@@ -1,7 +1,7 @@
 import { Permissions } from "../utils/enums/permissions-type.js";
 import { Command } from "../utils/interfaces/Command.js";
 import { isNightbotMultilineAvailable } from "../services/ijt-api/ping-multiline.js";
-import { logger } from "../utils/logger.js";
+import { LogPrefixes, logger } from "../utils/Logger.js";
 
 /**
 * 
@@ -20,7 +20,7 @@ export const command = {
         const bool: Boolean = await isNightbotMultilineAvailable();
         if (!bool) {
             logger
-                .setPrefix('[Services/ijt-api]')
+                .setPrefix(LogPrefixes.SERVICES_IJT_API)
                 .error('Error: Nightbot Multiline script not available.');
         }
 
