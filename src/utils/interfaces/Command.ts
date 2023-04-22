@@ -3,6 +3,7 @@ import { Permissions } from "../enums/permissions-type";
 
 export interface Command {
     name: string;
+    aliases?: string[];
     permission: Permissions;
     isDisabled?: boolean;
 

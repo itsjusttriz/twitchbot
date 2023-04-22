@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { client } from "./IJTClient";
+import { logger } from '../utils/logger';
 
 export async function loadEvents() {
     const events = fs.readdirSync(process.cwd() + '/dist/events').filter(f => f.endsWith('.js'));
@@ -7,7 +8,7 @@ export async function loadEvents() {
         const { event: e } = await import(`../events/${event}`);
 
         if (client.settings.disableEvents || e.isDisabled) {
-            console.log(`Found disabled event: ` + e.name);
+            logger.info('[System] Found disabled event:', e.name);
             continue;
         }
 

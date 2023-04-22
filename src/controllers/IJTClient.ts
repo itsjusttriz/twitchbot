@@ -1,6 +1,6 @@
-import { BasicObjectProps } from '@itsjusttriz/utils';
 import { Client } from '@twurple/auth-tmi';
 import { createAuthProvider } from './AuthController';
+import { Command } from '../utils/interfaces/Command';
 
 interface IJTClientProps {
     debug?: boolean;
@@ -10,7 +10,7 @@ interface IJTClientProps {
 
 export class IJTTwitchClient {
     settings: IJTClientProps;
-    commands: Map<string, BasicObjectProps>;
+    commands: Map<string, Command>;
     private _chat: Client;
 
     constructor(opts: IJTClientProps) {

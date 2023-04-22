@@ -1,4 +1,3 @@
-import { ITime } from "@itsjusttriz/utils";
 import { ChatUserstate } from "tmi.js";
 import { IJTTwitchClient } from "../controllers/IJTClient.js";
 import { hasPermission } from "../utils/check-command-permissions.js";
@@ -6,6 +5,7 @@ import { MessageOptions } from "../utils/MessageOptions.js";
 import { Event } from "../utils/interfaces/Event.js";
 import { handleBadJokes } from "../helper/store-badjoke-triggers.js";
 import { logger } from "../utils/logger/index.js";
+import { handleMessageLogging } from "../helper/message-log-handler.js";
 
 const badJokeChannels = new Map<string, boolean>();
 
@@ -15,24 +15,11 @@ export const event = {
 
     run: async (channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) => {
         const { chat } = client;
-
-        logger.normal(
-            client.settings.debug ? '[DEBUG-MODE]' : undefined,
-            channel,
-            self ? 'SELF' : `@${tags.username}`,
-            msg
-        );
+        const opts = new MessageOptions(channel, tags, msg, self, client);
 
         // ? Improve this.
-        // console.log([
-        //     ITime.formatNow('short'),
-        //     client.settings.debug ? '[DEBUG-MODE]' : undefined,
-        //     channel,
-        //     self ? 'SELF' : '@' + tags['username'],
-        //     msg
-        // ].join(' | '));
-
-        const opts = new MessageOptions(channel, tags, msg, self, client);
+        const msgLog = await handleMessageLogging(opts);
+        logger.normal(msgLog);
 
         await handleBadJokes(opts, badJokeChannels);
 
@@ -41,7 +28,7 @@ export const event = {
 
         const cmd = client.commands.get(opts.command);
 
-        if (cmd?.name !== opts.command)
+        if (![cmd?.name, ...cmd?.aliases].includes(opts.command))
             return;
         if (!hasPermission(tags, cmd.permission))
             return;

@@ -2,6 +2,7 @@ import { ITime } from "@itsjusttriz/utils";
 import { updateStoredChannels } from "../helper/update-stored-channels";
 import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
+import { logger } from "../utils/logger";
 
 export const event = {
     name: 'join',
@@ -13,11 +14,11 @@ export const event = {
 
         if (client.settings.debug)
             client.chat.say('itsjusttriz', `Joined ${channel}`);
-        console.info(ITime.formatNow('short'), `| Joined ${channel}`);
+        logger.info(`Joined ${channel}`);
 
         if (!client.settings.debug)
             await updateStoredChannels(channel.replace('#', ''), 'ADD').catch(e => {
-                console.warn(`[Error] Failed to run updateStoredChannels()#ADD: ` + e);
+                logger.error('[System/Events] Failed to run updateStoredChannels() of type "ADD":', e);
             })
         return;
     }

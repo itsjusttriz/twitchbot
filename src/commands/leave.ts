@@ -1,6 +1,7 @@
 import { isOwner } from "../utils/check-command-permissions.js";
 import { Command } from "../utils/interfaces/Command.js";
 import { Permissions } from "../utils/enums/permissions-type.js";
+import { logger } from "../utils/logger/index.js";
 
 export const command = {
     name: 'leave',
@@ -32,7 +33,7 @@ export const command = {
                     opts.chatClient.say(opts.channel, `@${opts.user} -> Leaving ${c}`);
                 })
                 .catch(async e => {
-                    console.warn(`[Error] Failed to leave ${c}: ` + e);
+                    logger.error(`[Chat/Commands] Failed to leave ${c}: ` + e);
                     opts.chatClient.say(opts.channel, 'Failed to leave channel: ' + c);
                 });
         }

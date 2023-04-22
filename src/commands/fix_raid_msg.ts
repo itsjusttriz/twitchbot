@@ -1,6 +1,7 @@
 import { Permissions } from "../utils/enums/permissions-type.js";
 import { Command } from "../utils/interfaces/Command.js";
 import { isNightbotMultilineAvailable } from "../services/ijt-api/ping-multiline.js";
+import { logger } from "../utils/logger/index.js";
 
 /**
 * 
@@ -18,7 +19,7 @@ export const command = {
     run: async opts => {
         const bool: Boolean = await isNightbotMultilineAvailable();
         if (!bool) {
-            console.log('[ijt-api] Error: Nightbot Multiline script not available.');
+            logger.error('[Services/ijt-api] Error: Nightbot Multiline script not available.');
         }
 
         opts.chatClient.say(opts.channel, `!editcom !raidmsg -a=!${bool ? 'ijt_raidmsg_api' : 'temporaryraidmessage'}`);
