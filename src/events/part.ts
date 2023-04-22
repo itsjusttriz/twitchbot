@@ -2,6 +2,7 @@ import { ITime } from "@itsjusttriz/utils";
 import { updateStoredChannels } from "../helper/update-stored-channels";
 import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
+import { colors, logger } from "../utils/logger";
 
 export const event = {
     name: 'part',
@@ -11,12 +12,14 @@ export const event = {
         if (!self)
             return;
 
-        // (await client.getChatClient()).say('itsjusttriz', `Joined ${channel}`);
-        console.info(ITime.formatNow('short'), `| Joined ${channel}`);
+        if (client.settings.debug)
+            client.chat.say('itsjusttriz', `Left ${channel}`);
+        logger.info(`${colors.RESET}[System/Events]`, `Left ${channel}`);
 
-        await updateStoredChannels(channel.replace('#', ''), 'REMOVE').catch(e => {
-            console.warn(`[Error] Failed to run updateStoredChannels()#REMOVE: ` + e);
-        });
+        if (!client.settings.debug)
+            await updateStoredChannels(channel.replace('#', ''), 'REMOVE').catch(e => {
+                logger.error('[System/Events] Failed to run updateStoredChannels() of type "REMOVE":', e);
+            })
         return;
     }
 } as Event;

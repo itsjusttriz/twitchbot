@@ -1,6 +1,10 @@
 import { ChatUserstate } from "tmi.js";
 import { Permissions } from "./enums/permissions-type";
 
+export function isVip(tags: ChatUserstate) {
+    return !!tags.badges.vip;
+}
+
 export function isSubOrAbove(tags: ChatUserstate) {
     return !!tags['subscriber'] || !!tags['badges']?.['subscriber'] || !!tags['badges']?.['founder'] || isModOrAbove(tags);
 }
@@ -22,6 +26,7 @@ export function getPermissions(tags: ChatUserstate) {
         [Permissions.OWNER]: isOwner(tags),
         [Permissions.CASTER]: isCasterOrAbove(tags),
         [Permissions.MODERATOR]: isModOrAbove(tags),
+        [Permissions.VIP]: isVip(tags),
         [Permissions.SUBSCRIBER]: isSubOrAbove(tags),
         [Permissions.REGULAR]: true
     }

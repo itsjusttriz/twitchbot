@@ -8,7 +8,7 @@ export async function loadEvents() {
         const { event: e } = await import(`../events/${event}`);
 
         if (client.settings.disableEvents || e.isDisabled) {
-            logger.info('[System] Found disabled event:', e.name);
+            logger.error('[System/Events] Found disabled event:', e.name);
             continue;
         }
 

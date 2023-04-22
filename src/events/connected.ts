@@ -7,7 +7,7 @@ export const event = {
     name: 'connected',
     once: true,
     run: async (address: string, port: number, client: IJTTwitchClient) => {
-        logger.success('[System] Connected to', address, '-', port)
+        logger.success('[System/Chat] Connected to', address, '-', port)
 
         if (client.settings.debug)
             client.chat.join('itsjusttriz');

@@ -27,8 +27,9 @@ export const event = {
             return;
 
         const cmd = client.commands.get(opts.command);
+        const isValidCommandName = cmd?.name === opts.command || cmd?.aliases.includes(opts.command);
 
-        if (![cmd?.name, ...cmd?.aliases].includes(opts.command))
+        if (!isValidCommandName)
             return;
         if (!hasPermission(tags, cmd.permission))
             return;

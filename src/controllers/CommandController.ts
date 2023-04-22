@@ -12,7 +12,6 @@ export async function loadCommands() {
             client.commands.set(cmd.name, cmd);
 
             if (cmd.aliases?.length) {
-                console.log(cmd.aliases)
                 for (const alias of cmd.aliases)
                     client.commands.set(alias, cmd);
             }

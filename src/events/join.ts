@@ -2,7 +2,7 @@ import { ITime } from "@itsjusttriz/utils";
 import { updateStoredChannels } from "../helper/update-stored-channels";
 import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
-import { logger } from "../utils/logger";
+import { colors, logger } from "../utils/logger";
 
 export const event = {
     name: 'join',
@@ -14,7 +14,7 @@ export const event = {
 
         if (client.settings.debug)
             client.chat.say('itsjusttriz', `Joined ${channel}`);
-        logger.info(`Joined ${channel}`);
+        logger.info(`${colors.RESET}[System/Events]`, `Joined ${channel}`);
 
         if (!client.settings.debug)
             await updateStoredChannels(channel.replace('#', ''), 'ADD').catch(e => {
