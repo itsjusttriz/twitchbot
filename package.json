@@ -10,6 +10,7 @@
   "author": "itsjusttriz",
   "license": "ISC",
   "dependencies": {
+    "@itsjusttriz/logger": "^1.0.2",
     "@itsjusttriz/utils": "^1.0.9",
     "@twurple/auth": "^6.1.0",
     "@twurple/auth-tmi": "^6.1.0",

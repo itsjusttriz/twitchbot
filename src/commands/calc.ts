@@ -1,7 +1,7 @@
 import { Permissions } from "../utils/enums/permissions-type.js";
 import { mathApi } from "../services/decapi/math.js";
 import { Command } from "../utils/interfaces/Command.js";
-import { logger } from "../utils/logger/index.js";
+import { logger } from "../utils/logger.js";
 
 export const command = {
     name: 'calc',
@@ -15,7 +15,9 @@ export const command = {
         await mathApi(opts.args[0]).then(async res => {
             opts.chatClient.say(opts.channel, res)
         }).catch(e => {
-            logger.error('[Services/Decapi] Failed to run mathApi():', e);
+            logger
+                .setPrefix('[Services/Decapi]')
+                .error('Failed to run mathApi():', e);
         });
         return;
     }

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { client } from "./IJTClient";
 import { Command } from '../utils/interfaces/Command';
-import { logger } from '../utils/logger';
+import { logger } from '../utils/Logger';
 
 export async function loadCommands() {
     const commands = fs.readdirSync(process.cwd() + '/dist/commands').filter(f => f.endsWith('.js'));
@@ -16,6 +16,8 @@ export async function loadCommands() {
                     client.commands.set(alias, cmd);
             }
         } else
-            logger.info(`[System] Found disabled command: ${cmd.name}`);
+            logger
+                .setPrefix('[System]')
+                .info(`Found disabled command: ${cmd.name}`);
     }
 }

@@ -2,7 +2,7 @@ import { ChatUserstate } from "tmi.js";
 import { Permissions } from "./enums/permissions-type";
 
 export function isVip(tags: ChatUserstate) {
-    return !!tags.badges.vip;
+    return !!tags.badges?.vip;
 }
 
 export function isSubOrAbove(tags: ChatUserstate) {

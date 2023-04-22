@@ -2,6 +2,7 @@ import { ChatUserstate } from "tmi.js";
 import { IJTTwitchClient } from "../controllers/IJTClient.js";
 
 export class MessageOptions {
+
     channel: string;
     tags: ChatUserstate;
     msg: string;

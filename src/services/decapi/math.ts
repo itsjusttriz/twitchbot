@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { LogPrefixes, logger } from "../../utils/Logger";
 
 const API_BASE_URL = 'https://decapi.me/math/';
 
@@ -13,7 +14,7 @@ export async function mathApi(expression: string) {
     })
         .then(resp => resp.text())
         .catch(e => {
-            console.warn(`[Error] Failed to fetch from ${API_BASE_URL}: ` + e);
+            logger.setPrefix(LogPrefixes.SERVICES_DECAPI).error(`Failed to fetch from ${API_BASE_URL}:`, e);
             return null;
         })
 }   

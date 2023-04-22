@@ -4,8 +4,8 @@ import { hasPermission } from "../utils/check-command-permissions.js";
 import { MessageOptions } from "../utils/MessageOptions.js";
 import { Event } from "../utils/interfaces/Event.js";
 import { handleBadJokes } from "../helper/store-badjoke-triggers.js";
-import { logger } from "../utils/logger/index.js";
 import { handleMessageLogging } from "../helper/message-log-handler.js";
+import { LogPrefixes, logger } from "../utils/Logger.js";
 
 const badJokeChannels = new Map<string, boolean>();
 
@@ -19,7 +19,9 @@ export const event = {
 
         // ? Improve this.
         const msgLog = await handleMessageLogging(opts);
-        logger.normal(msgLog);
+        logger
+            .setPrefix(client.settings.debug ? LogPrefixes.DEBUG_MODE : LogPrefixes.CHAT_MESSAGE)
+            .log(undefined, msgLog);
 
         await handleBadJokes(opts, badJokeChannels);
 

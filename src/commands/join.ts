@@ -1,6 +1,6 @@
 import { Command } from "../utils/interfaces/Command.js";
 import { Permissions } from "../utils/enums/permissions-type.js";
-import { logger } from "../utils/logger/index.js";
+import { logger } from "../utils/logger.js";
 
 export const command = {
     name: 'join',
@@ -20,7 +20,9 @@ export const command = {
                     opts.chatClient.say(opts.channel, `@${opts.user} -> Joining ${c}`);
                 })
                 .catch(async e => {
-                    logger.error(`[Chat/Commands] Failed to join ${c}: ` + e);
+                    logger
+                        .setPrefix('[Chat/Commands]')
+                        .error(`Failed to join ${c}:`, e);
                     opts.chatClient.say(opts.channel, 'Failed to join channel: ' + c)
                 });
         }

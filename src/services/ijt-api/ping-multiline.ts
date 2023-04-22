@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { LogPrefixes, logger } from "../../utils/Logger";
 
 const API_BASE_URL = 'https://api.itsjusttriz.com/nightbot/multiline';
 
@@ -10,7 +11,7 @@ export async function isNightbotMultilineAvailable() {
             return true;
         })
         .catch(e => {
-            console.warn(`[Error] Failed to fetch from ${API_BASE_URL}: ` + e);
+            logger.setPrefix(LogPrefixes.SERVICES_IJT_API).error(`Failed to fetch from ${API_BASE_URL}:`, e);
             return false;
         });
 }   

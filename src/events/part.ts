@@ -1,8 +1,7 @@
-import { ITime } from "@itsjusttriz/utils";
 import { updateStoredChannels } from "../helper/update-stored-channels";
 import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
-import { colors, logger } from "../utils/logger";
+import { ANSIColors, LogPrefixes, logger } from "../utils/Logger";
 
 export const event = {
     name: 'part',
@@ -14,11 +13,15 @@ export const event = {
 
         if (client.settings.debug)
             client.chat.say('itsjusttriz', `Left ${channel}`);
-        logger.info(`${colors.RESET}[System/Events]`, `Left ${channel}`);
+        logger
+            .setPrefix(LogPrefixes.UNCOLORED_EVENTS)
+            .info(`Left ${channel}`)
 
         if (!client.settings.debug)
             await updateStoredChannels(channel.replace('#', ''), 'REMOVE').catch(e => {
-                logger.error('[System/Events] Failed to run updateStoredChannels() of type "REMOVE":', e);
+                logger
+                    .setPrefix(LogPrefixes.COLORED_EVENTS)
+                    .error('Failed to run updateStoredChannels() of type "REMOVE":', e);
             })
         return;
     }

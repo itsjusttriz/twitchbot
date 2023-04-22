@@ -1,39 +1,37 @@
 import { ChatUserstate } from "tmi.js";
 import { MessageOptions } from "../utils/MessageOptions";
-import { colors } from "../utils/logger";
-import { isCasterOrAbove, isModOrAbove, isSubOrAbove, isVip } from "../utils/check-command-permissions";
+import { isCasterOrAbove, isModOrAbove, isOwner, isSubOrAbove, isVip } from "../utils/check-command-permissions";
+import { ANSIColors } from "../utils/Logger";
 
 export const parseUserType = async (tags: ChatUserstate) => {
     let prefixColor = "";
 
     switch (true) {
+        case isOwner(tags):
+            prefixColor = ANSIColors.BLUE;
+            break;
         case isCasterOrAbove(tags):
-            prefixColor = colors.RED;
+            prefixColor = ANSIColors.RED;
             break;
         case isModOrAbove(tags):
-            prefixColor = colors.GREEN;
+            prefixColor = ANSIColors.GREEN;
             break;
         case isSubOrAbove(tags):
-            prefixColor = colors.PURPLE;
+            prefixColor = ANSIColors.PURPLE;
             break;
         case isVip(tags):
-            prefixColor = colors.PINK;
+            prefixColor = ANSIColors.PINK;
             break;
         default:
-            prefixColor = colors.RESET;
+            prefixColor = ANSIColors.RESET;
     }
 
-    return `@${prefixColor}${tags.username}${colors.RESET}`;
+    return `${prefixColor}@${tags.username}${ANSIColors.RESET}`;
 }
 
 export const handleMessageLogging = async ({ client, channel, self, tags, msg }: MessageOptions): Promise<string> => {
     const arr = [];
-
-    if (client.settings.debug) {
-        arr.push(`${colors.DEBUG}[System/DEBUG]${colors.RESET}`);
-    }
-
-    arr.push('[System/Chat]', channel, (self ? 'SELF' : await parseUserType(tags)), msg);
+    arr.push(channel, (self ? 'SELF' : await parseUserType(tags)), msg);
 
     return new Promise((res, rej) => res(arr.join(' | ')));
 }
