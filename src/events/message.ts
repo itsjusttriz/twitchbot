@@ -4,6 +4,10 @@ import { IJTTwitchClient } from "../controllers/IJTClient.js";
 import { hasPermission } from "../utils/check-command-permissions.js";
 import { MessageOptions } from "../utils/MessageOptions.js";
 import { Event } from "../utils/interfaces/Event.js";
+import { handleBadJokes } from "../helper/store-badjoke-triggers.js";
+import { logger } from "../utils/logger/index.js";
+
+const badJokeChannels = new Map<string, boolean>();
 
 export const event = {
     name: 'message',
@@ -12,19 +16,29 @@ export const event = {
     run: async (channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) => {
         const { chat } = client;
 
-        // ? Improve this.
-        console.log([
-            ITime.formatNow('short'),
-            client.settings.debug ? '[DEBUG-MODE]' : '',
+        logger.normal(
+            client.settings.debug ? '[DEBUG-MODE]' : undefined,
             channel,
-            self ? 'SELF' : '@' + tags['username'],
+            self ? 'SELF' : `@${tags.username}`,
             msg
-        ].join(' | '));
+        );
+
+        // ? Improve this.
+        // console.log([
+        //     ITime.formatNow('short'),
+        //     client.settings.debug ? '[DEBUG-MODE]' : undefined,
+        //     channel,
+        //     self ? 'SELF' : '@' + tags['username'],
+        //     msg
+        // ].join(' | '));
+
+        const opts = new MessageOptions(channel, tags, msg, self, client);
+
+        await handleBadJokes(opts, badJokeChannels);
 
         if (self || !msg.startsWith('!'))
             return;
 
-        const opts = new MessageOptions(channel, tags, msg, self, client);
         const cmd = client.commands.get(opts.command);
 
         if (cmd?.name !== opts.command)
