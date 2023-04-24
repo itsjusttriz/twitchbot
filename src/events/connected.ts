@@ -9,7 +9,7 @@ export const event = {
     run: async (address: string, port: number, client: IJTTwitchClient) => {
         logger
             .setPrefix(LogPrefixes.CHAT_MESSAGE)
-            .success('Connected to', address, '-', port)
+            .success(`Connected to ${address} - ${port}`)
 
         if (client.settings.debug)
             client.chat.join('itsjusttriz');
@@ -17,7 +17,7 @@ export const event = {
             await joinChannelsOnStartup(client).catch(e => {
                 logger
                     .setPrefix(LogPrefixes.COLORED_EVENTS)
-                    .error('Failed to run joinChannels():', e);
+                    .error(`Failed to run joinChannels():${e}`);
             });
         return;
     }

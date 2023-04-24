@@ -24,6 +24,6 @@ export async function updateStoredChannels(channel: string, action: keyof typeof
 function handleError(action: string, e): unknown {
     logger
         .setPrefix(LogPrefixes.DATABASE)
-        .error(`Failed to update STORED_CHANNELS (action: ${action}):`, e);
+        .error(`Failed to update STORED_CHANNELS (action: ${action}): ${e}`);
     return;
 }

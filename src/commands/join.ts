@@ -22,8 +22,8 @@ export const command = {
                 .catch(async e => {
                     logger
                         .setPrefix(LogPrefixes.CHAT_MESSAGE)
-                        .error(`Failed to join ${c}:`, e);
-                    opts.chatClient.say(opts.channel, 'Failed to join channel: ' + c)
+                        .error(`Failed to join ${c}: ${e}`);
+                    opts.chatClient.say(opts.channel, `Failed to join channel: ${c}`)
                 });
         }
         return;

@@ -10,7 +10,7 @@ export async function loadEvents() {
         if (client.settings.disableEvents || e.isDisabled) {
             logger
                 .setPrefix(LogPrefixes.COLORED_EVENTS)
-                .error('Found disabled event:', e.name);
+                .error(`Found disabled event: ${e.name}`);
             continue;
         }
 

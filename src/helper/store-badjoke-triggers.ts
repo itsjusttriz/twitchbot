@@ -37,7 +37,8 @@ export const handleBadJokes = async (opts: MessageOptions, map: Map<string, bool
 
     if (is47y) {
         if (!map.has(opts.tags["room-id"])) {
-            logger.setPrefix(LISTENER_PREFIX).error('Channel ID not stored. Escaping...');
+            if (opts.client.settings.debug)
+                logger.setPrefix(LISTENER_PREFIX).error('Channel ID not stored. Escaping...');
             return;
         }
 

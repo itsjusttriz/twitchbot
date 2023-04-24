@@ -10,7 +10,7 @@ export async function joinChannelsOnStartup(client: IJTTwitchClient) {
     let storedChannels = await getJoinableChannels().catch(e => {
         logger
             .setPrefix(LogPrefixes.DATABASE)
-            .error('Failed to run getJoinableChannels():', e);
+            .error(`Failed to run getJoinableChannels(): ${e}`);
         return null;
     });
 
@@ -24,7 +24,7 @@ export async function joinChannelsOnStartup(client: IJTTwitchClient) {
         chat.join(c).catch(e => {
             logger
                 .setPrefix(LogPrefixes.CHAT_MESSAGE)
-                .error(`Failed to join ${c}:`, e)
+                .error(`Failed to join ${c}: ${e}`)
         });
     }
 }

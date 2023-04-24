@@ -14,14 +14,14 @@ export const event = {
         if (client.settings.debug)
             client.chat.say('itsjusttriz', `Joined ${channel}`);
         logger
-            .setPrefix(LogPrefixes.UNCOLORED_EVENTS)
-            .info(`Joined ${channel}`);
+            .setPrefix(LogPrefixes.COLORED_EVENTS)
+            .info(`TEST-Joined ${channel}`);
 
         if (!client.settings.debug)
             await updateStoredChannels(channel.replace('#', ''), 'ADD').catch(e => {
                 logger
                     .setPrefix(LogPrefixes.COLORED_EVENTS)
-                    .error('Failed to run updateStoredChannels() of type "ADD":', e);
+                    .error(`Failed to run updateStoredChannels() of type "ADD": ${e}`);
             })
         return;
     }
