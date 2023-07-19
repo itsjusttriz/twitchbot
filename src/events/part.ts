@@ -1,28 +1,25 @@
+import { dehashChannel } from "../helper/dehash-channels";
 import { updateStoredChannels } from "../helper/update-stored-channels";
-import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
-import { ANSIColors, LogPrefixes, logger } from "../utils/Logger";
+import { LogPrefixes, logger } from "../utils/Logger";
 
 export const event = {
     name: 'part',
     once: false,
 
-    run: async (channel: string, username: string, self: boolean, client: IJTTwitchClient) => {
+    run: async (client, channel: string, username: string, self: boolean) => {
         if (!self)
             return;
 
-        if (client.settings.debug)
-            client.chat.say('itsjusttriz', `Left ${channel}`);
-        logger
-            .setPrefix(LogPrefixes.UNCOLORED_EVENTS)
-            .info(`Left ${channel}`)
+        if (client.settings.debug.isToggled)
+            client.chat.say(client.settings.debug.logChannel, `Left ${channel}`);
 
-        if (!client.settings.debug)
-            await updateStoredChannels(channel.replace('#', ''), 'REMOVE').catch(e => {
-                logger
-                    .setPrefix(LogPrefixes.COLORED_EVENTS)
-                    .error('Failed to run updateStoredChannels() of type "REMOVE":', e);
-            })
+        logger.setPrefix(LogPrefixes.EVENTS).info(`Left ${channel}`)
+
+        if (!client.settings.debug.isToggled)
+            await updateStoredChannels(dehashChannel(channel), 'REMOVE').catch(e => {
+                logger.setPrefix(LogPrefixes.EVENTS).error(`Failed to run updateStoredChannels() of type "REMOVE": ${e}`);
+            });
         return;
     }
 } as Event;

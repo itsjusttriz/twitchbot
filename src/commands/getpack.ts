@@ -1,6 +1,6 @@
-import { getPackFromApi } from "../services/ijt-api/get-modpack.js";
-import { Command } from "../utils/interfaces/Command.js";
-import { Permissions } from "../utils/enums/permissions-type.js";
+import { Command } from "../utils/interfaces";
+import { Permissions } from "../utils/constants";
+import { IjtApi } from "../services/ijt.api.service";
 
 export const command = {
     name: 'getpack',
@@ -10,17 +10,18 @@ export const command = {
     maxArgsErrorMessage: 'Too many arguments. Try again!',
     blacklisted_channels: ['stackupdotorg'],
     run: async opts => {
-        if (!opts.msgText) {
-            opts.chatClient.say(opts.channel, 'No id detected. Try again!');
+        const api = await IjtApi.getModpack(opts.args[0]);
+        if (!api) {
+            await opts.chatClient.say(opts.channel, `Failed to fetch this modpack.`);
             return;
         }
 
-        const pack = await getPackFromApi(opts.args[0]);
-        if (!pack) {
-            opts.chatClient.say(opts.channel, 'Failed to fetch this modpack.');
+        if (api.code !== 200) {
+            await opts.chatClient.say(opts.channel, `Failed to fetch this modpack -> ${api.message}`);
             return;
         }
 
+        const { payload: pack } = api;
         const msg = [
             `Requested modpack is called ${pack.name}.`,
             `Created by ${pack.dev}.`,
@@ -29,7 +30,7 @@ export const command = {
             (pack.launcher || pack.link) ? `Found here: ${pack.link}` : ''
         ].join(' ');
 
-        opts.chatClient.say(opts.channel, msg);
+        await opts.chatClient.say(opts.channel, msg);
         return;
     }
 } as Command;

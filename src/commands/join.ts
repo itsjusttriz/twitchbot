@@ -1,6 +1,6 @@
-import { Command } from "../utils/interfaces/Command.js";
-import { Permissions } from "../utils/enums/permissions-type.js";
-import { LogPrefixes, logger } from "../utils/Logger.js";
+import { Command } from "../utils/interfaces";
+import { Permissions } from "../utils/constants";
+import { LogPrefixes, logger as _logger } from "../utils/Logger";
 
 export const command = {
     name: 'join',
@@ -9,22 +9,14 @@ export const command = {
     blacklisted_channels: ['stackupdotorg'],
 
     run: async opts => {
-        if (!opts.msgText) {
-            opts.chatClient.say(opts.channel, 'No channel(s) detected. Try again!');
-            return;
-        }
+        const logger = _logger.setPrefix(LogPrefixes.CHAT_MESSAGE);
 
         for (const c of opts.args) {
-            opts.chatClient.join(c)
-                .then(async c => {
-                    opts.chatClient.say(opts.channel, `@${opts.user} -> Joining ${c}`);
-                })
-                .catch(async e => {
-                    logger
-                        .setPrefix(LogPrefixes.CHAT_MESSAGE)
-                        .error(`Failed to join ${c}: ${e}`);
-                    opts.chatClient.say(opts.channel, `Failed to join channel: ${c}`)
-                });
+            const joined = await opts.chatClient.join(c).catch(async e => {
+                logger.error(`Failed to join ${c}: ${e}`);
+                await opts.chatClient.say(opts.channel, `Failed to join channel: ${c}`)
+            });
+            await opts.chatClient.say(opts.channel, `@${opts.user} -> Joining ${joined}`);
         }
         return;
     }

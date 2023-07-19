@@ -1,5 +1,5 @@
 import { addChannelToStoredChannels, updateBlacklistedChannels } from "../utils/sqlite";
-import { AddOrRemoveChannel } from "../utils/enums/add-or-remove-channel";
+import { AddOrRemoveChannel } from "../utils/constants";
 import { LogPrefixes, logger } from "../utils/Logger";
 
 export async function updateStoredChannels(channel: string, action: keyof typeof AddOrRemoveChannel) {
@@ -10,20 +10,17 @@ export async function updateStoredChannels(channel: string, action: keyof typeof
             break;
         }
         case AddOrRemoveChannel.REMOVE: {
-            await updateBlacklistedChannels(true, channel).catch(e => handleError(action, e));
+            await updateBlacklistedChannels(channel, true).catch(e => handleError(action, e));
             break;
         }
         default: {
             return;
         }
     }
-
     return;
 }
 
 function handleError(action: string, e): unknown {
-    logger
-        .setPrefix(LogPrefixes.DATABASE)
-        .error(`Failed to update STORED_CHANNELS (action: ${action}): ${e}`);
+    logger.setPrefix(LogPrefixes.DATABASE).error(`Failed to update STORED_CHANNELS (action: ${action}): ${e}`);
     return;
 }

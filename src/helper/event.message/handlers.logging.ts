@@ -1,7 +1,7 @@
 import { ChatUserstate } from "tmi.js";
-import { MessageOptions } from "../utils/MessageOptions";
-import { isCasterOrAbove, isModOrAbove, isOwner, isSubOrAbove, isVip } from "../utils/check-command-permissions";
-import { ANSIColors } from "../utils/Logger";
+import { MessageOptions } from "../../utils/MessageOptions";
+import { isCasterOrAbove, isModOrAbove, isOwner, isSubOrAbove, isVip } from "../../utils/check-command-permissions";
+import { ANSIColors } from "../../utils/Logger";
 
 export const parseUserType = async (tags: ChatUserstate) => {
     let prefixColor = "";
@@ -29,9 +29,8 @@ export const parseUserType = async (tags: ChatUserstate) => {
     return `${prefixColor}@${tags.username}${ANSIColors.RESET}`;
 }
 
-export const handleMessageLogging = async ({ client, channel, self, tags, msg }: MessageOptions): Promise<string> => {
-    const arr = [];
-    arr.push(channel, (self ? 'SELF' : await parseUserType(tags)), msg);
+export const handleMessageLogging = async ({ channel, self, tags, msg }: MessageOptions): Promise<string> => {
+    const arr = [channel, (self ? 'SELF' : await parseUserType(tags)), msg];
 
     return new Promise((res, rej) => res(arr.join(' | ')));
 }

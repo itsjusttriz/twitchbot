@@ -1,30 +1,24 @@
-import { IJTTwitchClient } from "../controllers/IJTClient";
+import { ClientController } from "../controllers/client.controller";
 import { LogPrefixes, logger } from "../utils/Logger";
 import { getJoinableChannels } from "../utils/sqlite";
 
-const DEFAULT_CHANNELS = ['itsjusttriz', 'trizutils'];
+const DEFAULT_CHANNELS = ['itsjusttriz', 'ijtdev'];
 
-export async function joinChannelsOnStartup(client: IJTTwitchClient) {
+export async function joinChannelsOnStartup(client: typeof ClientController) {
     const { chat } = client;
 
     let storedChannels = await getJoinableChannels().catch(e => {
-        logger
-            .setPrefix(LogPrefixes.DATABASE)
-            .error(`Failed to run getJoinableChannels(): ${e}`);
-        return null;
+        logger.setPrefix(LogPrefixes.DATABASE).error(`Failed to run getJoinableChannels(): ${e}`);
+        return;
     });
 
-    if (!storedChannels)
-        storedChannels = [];
-    else
-        storedChannels = storedChannels.map((doc: { name: string; }) => doc.name);
+    const channels = !storedChannels || !storedChannels.length
+        ? DEFAULT_CHANNELS
+        : storedChannels.map((doc: { name: string; }) => doc.name);
 
-    const channels = storedChannels.length < 1 ? DEFAULT_CHANNELS : storedChannels;
-    for (const c of channels) {
-        chat.join(c).catch(e => {
-            logger
-                .setPrefix(LogPrefixes.CHAT_MESSAGE)
-                .error(`Failed to join ${c}: ${e}`)
+    for (const channel of channels) {
+        await chat.join(channel).catch(e => {
+            logger.setPrefix(LogPrefixes.CHAT_MESSAGE).error(`Failed to join ${channel}: ${e}`)
         });
     }
 }

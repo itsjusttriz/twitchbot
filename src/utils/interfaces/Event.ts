@@ -1,6 +1,9 @@
+import { Events } from "tmi.js";
+import { ClientController } from "../../controllers/client.controller";
+
 export interface Event {
-    name: string;
-    once: boolean;
+    name: keyof Events;
+    once?: boolean;
     isDisabled?: boolean;
-    run: (...args: any) => void;
+    run: (client: typeof ClientController, ...args: any) => void;
 }

@@ -7,8 +7,8 @@ async function createAuthProvider() {
     const tokenData = JSON.parse(await fsp.readFile('./tokens.json', 'utf8'));
 
     const authProvider = new RefreshingAuthProvider({
-        clientId: config?.CLIENT_ID,
-        clientSecret: config?.CLIENT_SECRET,
+        clientId: config?.twitch.CLIENT_ID,
+        clientSecret: config?.twitch.CLIENT_SECRET,
         onRefresh: async (userId, newTokenData) => await fsp.writeFile(`./tokens.json`, JSON.stringify(newTokenData, null, 4), 'utf8')
     });
 

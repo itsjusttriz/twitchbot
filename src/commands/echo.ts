@@ -1,5 +1,5 @@
-import { Command } from "../utils/interfaces/Command.js";
-import { Permissions } from "../utils/enums/permissions-type.js";
+import { Permissions } from "../utils/constants";
+import { Command } from "../utils/interfaces";
 
 export const command = {
     name: 'echo',
@@ -7,7 +7,7 @@ export const command = {
     requiresInput: true,
     blacklisted_channels: ['stackupdotorg'],
     run: async opts => {
-        opts.chatClient.say(opts.channel, opts.msgText);
+        await opts.chatClient.say(opts.channel, opts.msgText);
         return;
     }
 } as Command;

@@ -1,20 +1,20 @@
 import { ChatUserstate } from "tmi.js";
-import { IJTTwitchClient } from "../controllers/IJTClient.js";
+import { ClientController } from "../controllers/client.controller.js";
+import { dehashChannel } from "../helper/dehash-channels.js";
 
 export class MessageOptions {
-
     channel: string;
     tags: ChatUserstate;
     msg: string;
     self: boolean;
-    client: IJTTwitchClient;
+    client: typeof ClientController;
 
     args: string[];
     command: string;
     msgText: string;
     user: string;
 
-    constructor(channel: string, tags: ChatUserstate, msg: string, self: boolean, client: IJTTwitchClient) {
+    constructor(channel: string, tags: ChatUserstate, msg: string, self: boolean, client: typeof ClientController) {
         //? Initial properties.
         this.channel = channel;
         this.tags = tags;
@@ -33,5 +33,9 @@ export class MessageOptions {
 
     get chatClient() {
         return this.client.chat;
+    }
+
+    get dehashedChannel() {
+        return dehashChannel(this.channel);
     }
 }

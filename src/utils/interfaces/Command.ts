@@ -1,16 +1,19 @@
 import { MessageOptions } from "../MessageOptions";
-import { Permissions } from "../enums/permissions-type";
+import { Permissions } from "../constants";
 
 export interface Command {
     name: string;
     aliases?: string[];
-    permission: Permissions;
+    permission: keyof typeof Permissions;
     isDisabled?: boolean;
 
     requiresInput?: boolean;
 
+    minArgs?: number;
+    min_args_error_message?: string;
+
     maxArgs?: number;
-    maxArgsErrorMessage?: string;
+    max_args_error_message?: string;
 
     whitelisted_channels?: string[];
     blacklisted_channels?: string[];

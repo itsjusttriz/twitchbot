@@ -1,11 +1,30 @@
-import { loadCommands } from "./controllers/CommandController";
-import { loadEvents } from "./controllers/EventController";
-import { client } from "./controllers/IJTClient";
-import { loadBackend } from "./services/uptime-robot";
+import { client } from "./controllers/client.controller";
+import { LogPrefixes, logger as _logger } from "./utils/Logger";
+import express from 'express';
 
-(async () => {
-    (await client.createChatClient()).connect();
-    await loadBackend();
-    await loadEvents();
-    await loadCommands();
-})();
+const app = express();
+const logger = _logger.setPrefix(LogPrefixes.SERVICES_BACKEND);
+
+app.head('/', (req, res) => {
+    if (client.settings.debug)
+        logger.success('Backend called upon!');
+    res.status(200).end();
+    return;
+});
+
+app.listen(8082, async () => {
+    logger.success('Backend Loaded!');
+
+    const chat = await client.createChatClient();
+    chat.connect();
+
+    await client.loadDiscordWebhooks();
+    await client.loadEvents();
+    await client.loadCommands();
+    setTimeout(() => internalUptimeCheck(chat), 1000);
+});
+
+function internalUptimeCheck(c: typeof client.chat) {
+    c.say('ijtdev', 'Uptime Check.');
+    setTimeout(() => internalUptimeCheck(c), 1000 * 60 * 3);
+}

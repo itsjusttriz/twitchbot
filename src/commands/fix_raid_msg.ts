@@ -1,7 +1,7 @@
-import { Permissions } from "../utils/enums/permissions-type.js";
-import { Command } from "../utils/interfaces/Command.js";
-import { isNightbotMultilineAvailable } from "../services/ijt-api/ping-multiline.js";
-import { LogPrefixes, logger } from "../utils/Logger.js";
+import { IjtApi } from "../services/ijt.api.service";
+import { LogPrefixes, logger as _logger } from "../utils/Logger";
+import { Permissions } from "../utils/constants";
+import { Command } from "../utils/interfaces";
 
 /**
 * 
@@ -17,14 +17,14 @@ export const command = {
     whitelisted_users: ['finncapp', 'itsjusttriz'],
 
     run: async opts => {
-        const bool: Boolean = await isNightbotMultilineAvailable();
-        if (!bool) {
-            logger
-                .setPrefix(LogPrefixes.SERVICES_IJT_API)
-                .error('Error: Nightbot Multiline script not available.');
+        const logger = _logger.setPrefix(LogPrefixes.SERVICES_IJT_API);
+
+        const isNightbotAvailable: Boolean = await IjtApi.isNightbotAvailable();
+        if (!isNightbotAvailable) {
+            logger.error('Error: Nightbot Multiline script not available.');
         }
 
-        opts.chatClient.say(opts.channel, `!editcom !raidmsg -a=!${bool ? 'ijt_raidmsg_api' : 'temporaryraidmessage'}`);
+        await opts.chatClient.say(opts.channel, `!editcom !raidmsg -a=!${isNightbotAvailable ? 'ijt_raidmsg_api' : 'temporaryraidmessage'}`);
         return;
     }
 } as Command;

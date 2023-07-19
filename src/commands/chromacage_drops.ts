@@ -1,16 +1,14 @@
 import { ITime } from "@itsjusttriz/utils";
-import { Permissions } from "../utils/enums/permissions-type.js";
-import { Command } from "../utils/interfaces/Command.js";
+import { Permissions } from "../utils/constants";
+import { Command } from "../utils/interfaces";
 
 /**
-* 
 * This command is stritcly used for the StackUpDotOrg channel for when Finncapp is live on the ChromaCage MC server.
 */
 
 export const command = {
     name: 'drops',
     permission: Permissions.REGULAR,
-    requiresInput: false,
 
     whitelisted_channels: ['stackupdotorg'],
     whitelisted_users: ['finncapp', 'itsjusttriz'],
@@ -25,7 +23,7 @@ export const command = {
         ]
 
         for (const line of m) {
-            opts.chatClient.say(opts.channel, line);
+            await opts.chatClient.say(opts.channel, line);
             await ITime.wait(2000);
         }
         return;

@@ -1,5 +1,4 @@
 import { updateStoredChannels } from "../helper/update-stored-channels";
-import { IJTTwitchClient } from "../controllers/IJTClient";
 import { Event } from "../utils/interfaces/Event";
 import { LogPrefixes, logger } from "../utils/Logger";
 
@@ -7,20 +6,20 @@ export const event = {
     name: 'join',
     once: false,
 
-    run: async (channel: string, username: string, self: boolean, client: IJTTwitchClient) => {
+    run: async (client, channel: string, username: string, self: boolean) => {
         if (!self)
             return;
 
-        if (client.settings.debug)
-            client.chat.say('itsjusttriz', `Joined ${channel}`);
+        if (client.settings.debug.toggle)
+            client.chat.say(client.settings.debug.logChannel, `Joined ${channel}`);
         logger
-            .setPrefix(LogPrefixes.COLORED_EVENTS)
-            .info(`TEST-Joined ${channel}`);
+            .setPrefix(LogPrefixes.EVENTS)
+            .info(`Joined ${channel}`);
 
         if (!client.settings.debug)
             await updateStoredChannels(channel.replace('#', ''), 'ADD').catch(e => {
                 logger
-                    .setPrefix(LogPrefixes.COLORED_EVENTS)
+                    .setPrefix(LogPrefixes.EVENTS)
                     .error(`Failed to run updateStoredChannels() of type "ADD": ${e}`);
             })
         return;
