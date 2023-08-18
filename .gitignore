@@ -1,5 +1,8 @@
 node_modules
+dist
+
 src/config.json
 tokens.json
-dist
+package-lock.json
+
 ijt-twitchbot.db
