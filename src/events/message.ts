@@ -1,10 +1,10 @@
-import { ChatUserstate } from "tmi.js";
-import { hasPermission } from "../utils/check-command-permissions.js";
-import { MessageOptions } from "../utils/MessageOptions.js";
-import { Event } from "../utils/interfaces/Event.js";
-import { handleBadJokes } from "../helper/event.message/handlers.badjoke.js";
-import { handleMessageLogging } from "../helper/event.message/handlers.logging.js";
-import { LogPrefixes, logger } from "../utils/Logger.js";
+import { ChatUserstate } from 'tmi.js';
+import { hasPermission } from '../utils/check-command-permissions.js';
+import { MessageOptions } from '../utils/MessageOptions.js';
+import { Event } from '../utils/interfaces/Event.js';
+import { handleBadJokes } from '../helper/event.message/handlers.badjoke.js';
+import { handleMessageLogging } from '../helper/event.message/handlers.logging.js';
+import { logger } from '../utils/Logger.js';
 
 const badJokeChannels = new Map<string, boolean>();
 
@@ -18,28 +18,25 @@ export const event = {
 
         // ? Improve this.
         const msgLog = await handleMessageLogging(opts);
-        logger
-            .setPrefix(client.settings.debug.isToggled ? LogPrefixes.DEBUG_MODE : LogPrefixes.CHAT_MESSAGE)
-            .log(undefined, msgLog);
+        logger[client.settings.debug.enabled ? 'sysDebug' : 'sysChat'].log(undefined, msgLog);
 
         await handleBadJokes(opts, badJokeChannels);
 
-        if (self || !msg.startsWith(client.settings.prefix))
-            return;
+        if (self || !msg.startsWith(client.settings.prefix)) return;
 
         const cmd = client.commands.get(opts.command);
         const isValidCommandName = cmd?.name === opts.command || cmd?.aliases?.includes(opts.command);
 
-        if (!isValidCommandName)
+        if (!isValidCommandName) return;
+        if (!hasPermission(tags, cmd.permission)) return;
+        if (cmd?.blacklisted_channels?.length && cmd?.blacklisted_channels?.includes(opts.dehashedChannel)) return;
+        if (
+            cmd?.whitelisted_channels?.length &&
+            !cmd?.whitelisted_channels?.includes(opts.dehashedChannel) &&
+            opts.dehashedChannel !== client.settings.debug.logChannel
+        )
             return;
-        if (!hasPermission(tags, cmd.permission))
-            return;
-        if (cmd?.blacklisted_channels?.length && cmd?.blacklisted_channels?.includes(opts.dehashedChannel))
-            return;
-        if (cmd?.whitelisted_channels?.length && (!cmd?.whitelisted_channels?.includes(opts.dehashedChannel) && opts.dehashedChannel !== client.settings.debug.logChannel))
-            return;
-        if (cmd?.whitelisted_users && !cmd?.whitelisted_users.includes(opts.user))
-            return;
+        if (cmd?.whitelisted_users && !cmd?.whitelisted_users.includes(opts.user)) return;
 
         if (cmd?.requiresInput && !opts.msgText) {
             await chat.say(opts.channel, `${opts.user} -> This command requires input. Try again!`);
@@ -47,15 +44,21 @@ export const event = {
         }
 
         if (cmd?.minArgs && opts.args.length < cmd.minArgs) {
-            await chat.say(opts.channel, `${opts.user} => ${cmd.min_args_error_message || 'Not enough arguments. Try again!'}`);
+            await chat.say(
+                opts.channel,
+                `${opts.user} => ${cmd.min_args_error_message || 'Not enough arguments. Try again!'}`
+            );
             return;
         }
 
         if (cmd?.maxArgs && opts.args.length > cmd.maxArgs) {
-            await chat.say(opts.channel, `${opts.user} -> ${cmd.max_args_error_message || 'Too many arguments. Try again!'}`);
+            await chat.say(
+                opts.channel,
+                `${opts.user} -> ${cmd.max_args_error_message || 'Too many arguments. Try again!'}`
+            );
             return;
         }
 
         cmd.run(opts);
-    }
+    },
 } as Event;

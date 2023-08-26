@@ -1,17 +1,37 @@
 import { Logger, ANSIColors } from '@itsjusttriz/logger';
 
-const logger = new Logger();
+type LoggerProps = {
+    sysChat: Logger;
+    sysEvent: Logger;
+    sysDebug: Logger;
+    db: Logger;
+    svcDecApi: Logger;
+    svcIjtApi: Logger;
+    svcBackend: Logger;
+};
 
-enum LogPrefixes {
-    CHAT_MESSAGE = '[System/Chat]',
-    EVENTS = '[System/Events]',
-    DATABASE = '[System/Database]',
+const logger: LoggerProps = {
+    sysChat: new Logger({
+        customPrefix: '[System/CHAT]',
+    }),
+    sysEvent: new Logger({
+        customPrefix: '[System/EVENT]',
+    }),
+    sysDebug: new Logger({
+        customPrefix: `${ANSIColors.DEBUG}[System/DEBUG]${ANSIColors.RESET}`,
+    }),
+    db: new Logger({
+        customPrefix: '[System/DATABASE]',
+    }),
+    svcDecApi: new Logger({
+        customPrefix: '[Services/DECAPI]',
+    }),
+    svcIjtApi: new Logger({
+        customPrefix: '[Services/IJTAPI]',
+    }),
+    svcBackend: new Logger({
+        customPrefix: '[Services/BACKEND]',
+    }),
+};
 
-    SERVICES_DECAPI = '[Services/Decapi]',
-    SERVICES_IJT_API = '[Services/ijt-api]',
-    SERVICES_BACKEND = '[System/Backend]',
-
-    DEBUG_MODE = `${ANSIColors.DEBUG}[System/DEBUG]${ANSIColors.RESET}`
-}
-
-export { logger, ANSIColors, LogPrefixes };
+export { logger, ANSIColors };

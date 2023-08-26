@@ -1,19 +1,17 @@
-import { client } from "./controllers/client.controller";
-import { LogPrefixes, logger as _logger } from "./utils/Logger";
+import { client } from './controllers/client.controller';
+import { logger } from './utils/Logger';
 import express from 'express';
 
 const app = express();
-const logger = _logger.setPrefix(LogPrefixes.SERVICES_BACKEND);
 
 app.head('/', (req, res) => {
-    if (client.settings.debug)
-        logger.success('Backend called upon!');
+    if (client.settings.debug.enabled) logger.svcBackend.success('Backend called upon!');
     res.status(200).end();
     return;
 });
 
 app.listen(8082, async () => {
-    logger.success('Backend Loaded!');
+    logger.svcBackend.success('Backend Loaded!');
 
     const chat = await client.createChatClient();
     chat.connect();

@@ -1,6 +1,6 @@
-import { ChatUserstate } from "tmi.js";
-import { ClientController } from "../controllers/client.controller.js";
-import { dehashChannel } from "../helper/dehash-channels.js";
+import { ChatUserstate } from 'tmi.js';
+import { ClientController } from '../controllers/client.controller.js';
+import { dehashChannel } from '../helper/dehash-channels.js';
 
 export class MessageOptions {
     channel: string;
@@ -23,10 +23,10 @@ export class MessageOptions {
         this.client = client;
 
         //? Custom Properties.
-        this.args = (this.msg).slice(1).split(' ');
-        this.command = (this.args).shift().toLowerCase();
-        this.msgText = (this.args).join(' ');
-        this.user = (this.tags).username;
+        this.args = this.msg.slice(1).split(' ');
+        this.command = this.args.shift().toLowerCase();
+        this.msgText = this.args.join(' ');
+        this.user = this.tags.username;
     }
 
     // TODO: Create mention clause, channel-based config dependant.

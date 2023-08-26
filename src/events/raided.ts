@@ -1,56 +1,52 @@
-import { RaidUserstate } from "tmi.js";
-import { dehashChannel } from "../helper/dehash-channels";
-import { Event } from "../utils/interfaces/Event";
-import { addChannelEvent, getChannelEvent } from "../utils/sqlite";
-import { LogPrefixes, logger as _logger } from "../utils/Logger";
-
-const logger = {
-    db: _logger.setPrefix(LogPrefixes.DATABASE),
-    event: _logger.setPrefix(LogPrefixes.EVENTS),
-    normal: _logger.setPrefix(LogPrefixes.DEBUG_MODE)
-}
+import { RaidUserstate } from 'tmi.js';
+import { dehashChannel } from '../helper/dehash-channels';
+import { Event } from '../utils/interfaces/Event';
+import { addChannelEvent, getChannelEvent } from '../utils/sqlite';
+import { logger } from '../utils/Logger';
+import { EmbedBuilder } from 'discord.js';
 
 const _catch = (e: any) => {
-    logger.normal.error(e);
+    logger.sysDebug.error(e);
     return;
-}
+};
 
 const parseVars = async (channel: string, username: string, viewers: number, message: string) => {
     return message
         .replaceAll('{channel}', channel)
         .replaceAll('{username}', username)
-        .replaceAll('{viewercount}', viewers.toString())
-}
+        .replaceAll('{viewercount}', viewers.toString());
+};
 
 const noEventFallback = async (hook: any, channel: string) => {
     if (hook) {
-        const m = await hook.send({
-            username: `Twitch Raid Event - ${channel}`,
-            content: `No event:raided config found for channel:${channel}`
-        }).catch(_catch);
+        const m = await hook
+            .send({
+                username: `Twitch Raid Event - ${channel}`,
+                content: `No event:raided config found for channel (${channel})`,
+            })
+            .catch(_catch);
 
         if (!m || !m.id) {
-            logger.normal.error("DiscordWebhook failed to send message.")
+            logger.sysDebug.error('DiscordWebhook failed to send message.');
         }
     }
 
-    await addChannelEvent(
-        channel,
-        'raided'
-    ).then(() => {
-        logger.db.success(`Added DiscordWebhook for channel (${channel})`);
-    }).catch(e => {
-        logger.db.error(e);
-        return;
-    });
-}
+    await addChannelEvent(channel, 'raided')
+        .then(() => {
+            logger.db.success(`Added DiscordWebhook for channel (${channel})`);
+        })
+        .catch((e) => {
+            logger.db.error(e);
+            return;
+        });
+};
 
 export const event = {
     name: 'raided',
     once: false,
     run: async (client, channel: string, username: string, viewers: number, tags: RaidUserstate) => {
         const chan = dehashChannel(channel);
-        const event = await getChannelEvent(chan, 'raided').catch(e => {
+        const event = await getChannelEvent(chan, 'raided').catch((e) => {
             logger.db.error(e);
             return;
         });
@@ -68,42 +64,60 @@ export const event = {
         }
 
         const isDisabled = Boolean(event.disabled);
-        if (isDisabled)
-            shouldRespondToEvent = false;
+        if (isDisabled) shouldRespondToEvent = false;
 
-        if (viewers < parseInt(event.trigger))
-            shouldRespondToEvent = false;
+        if (viewers < parseInt(event.trigger)) shouldRespondToEvent = false;
 
         const response = (await parseVars(chan, username, viewers, event.message)).split('\\n');
 
         for (const line of response) {
-            if (!shouldRespondToEvent)
-                break;
+            if (!shouldRespondToEvent) break;
             else
-                await client.chat.say(chan, line).catch(e => {
-                    logger.normal.error(`Failed to send message in channel (${chan}): "${line}"`)
+                await client.chat.say(chan, line).catch((e) => {
+                    logger.sysDebug.error(`Failed to send message in channel (${chan}): "${line}"`);
                 });
         }
 
-        if (!hook)
-            return;
+        if (!hook) return;
 
         const logObj = {
-            channel: chan,
+            channel,
             raider: username,
             isDisabled,
             viewers,
             trigger: parseInt(event.trigger),
-            response
+            response,
         };
-        const m = await hook.send({
-            username: `Twitch Raid Event - ${channel}`,
-            content: `\`\`\`json\n${JSON.stringify(logObj, null, 4)}\n\`\`\``
-        }).catch(_catch);
+        const m = await hook
+            .send({
+                username: `TwitchBot Log`,
+                embeds: [
+                    new EmbedBuilder({
+                        title: `Raid Event - ${logObj.channel}`,
+                        description: [
+                            `This event response **${shouldRespondToEvent}** triggered.\n`,
+                            ...Object.entries({
+                                Raider: logObj.raider,
+                                isDisabled: `${isDisabled}`.toUpperCase(),
+                                Viewers: logObj.viewers,
+                                'Min. Viewers': logObj.trigger,
+                            }).map((key, value) => {
+                                return `**${key}:** \` ${value} \``;
+                            }),
+
+                            // This one is seperate due to the formatting being different.
+                            `**Response(s):** \`\`\`\n${response.join('\n')}\n\`\`\``,
+                        ].join('\n'),
+
+                        // If the response SHOULD be sent & current viewers is above, or equal to, the min. viewers... be GREEN... otherwise, be RED.
+                    }).setColor(shouldRespondToEvent && logObj.viewers >= logObj.trigger ? 'Green' : 'Red'),
+                ],
+            })
+            .catch(_catch);
 
         if (!m || !m.id) {
-            logger.normal.error("DiscordWebhook failed to send message.");
+            logger.sysDebug.error('DiscordWebhook failed to send message.');
         }
         return;
-    }
+    },
 } as Event;

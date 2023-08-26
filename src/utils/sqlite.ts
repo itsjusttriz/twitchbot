@@ -5,9 +5,9 @@ import { TableNames } from './constants';
 let _cachedDatabase: Promise<Database<sqlite3.Database, sqlite3.Statement>>;
 
 export const getDB = async () => {
-    return _cachedDatabase ?? (_cachedDatabase = open({
+    return (_cachedDatabase ??= open({
         filename: './ijt-twitchbot.db',
-        driver: sqlite3.Database
+        driver: sqlite3.Database,
     }));
 };
 
@@ -20,20 +20,19 @@ export const getAllRows = async (table: keyof typeof TableNames) => {
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.all();
-}
+};
 
 /**
  * * --- Event Management --- *
  */
 export const addChannelEvent = async (channel: string, event: string) => {
-    if (event !== 'raided')
-        return;
+    if (event !== 'raided') return;
 
     const sql = `INSERT INTO ${TableNames.TWITCH_CHANNEL_EVENT_RESPONSES} (channel, event) VALUES (?, ?)`;
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.run(channel, event);
-}
+};
 
 export const getChannelEvent = async (channel: string, event: string) => {
     const sql = `SELECT * FROM ${TableNames.TWITCH_CHANNEL_EVENT_RESPONSES} WHERE channel=$channel AND event=$event`;
@@ -41,9 +40,9 @@ export const getChannelEvent = async (channel: string, event: string) => {
     const stmt = await db.prepare(sql);
     return stmt.get({
         $channel: channel,
-        $event: event
+        $event: event,
     });
-}
+};
 
 export const toggleChannelEvent = async (channel: string, event: string, value: boolean) => {
     const sql = `UPDATE ${TableNames.TWITCH_CHANNEL_EVENT_RESPONSES} SET disabled=$value WHERE channel=$channel AND event=$event`;
@@ -52,9 +51,9 @@ export const toggleChannelEvent = async (channel: string, event: string, value: 
     return stmt.run({
         $value: !value ? 1 : 0,
         $channel: channel,
-        $event: event
+        $event: event,
     });
-}
+};
 
 export const updateChannelRaidEventMessage = async (channel: string, event: string, value: string) => {
     const sql = `UPDATE ${TableNames.TWITCH_CHANNEL_EVENT_RESPONSES} SET message=$value WHERE channel=$channel AND event=$event`;
@@ -63,14 +62,13 @@ export const updateChannelRaidEventMessage = async (channel: string, event: stri
     return stmt.run({
         $value: value,
         $channel: channel,
-        $event: event
+        $event: event,
     });
-}
+};
 
 export const updateChannelRaidEventTrigger = async (channel: string, event: string, value: string) => {
     const num = parseInt(value);
-    if (isNaN(num))
-        return;
+    if (isNaN(num)) return;
 
     const sql = `UPDATE ${TableNames.TWITCH_CHANNEL_EVENT_RESPONSES} SET trigger=$value WHERE channel=$channel AND event=$event`;
     const db = await getDB();
@@ -78,10 +76,9 @@ export const updateChannelRaidEventTrigger = async (channel: string, event: stri
     return stmt.run({
         $value: value,
         $channel: channel,
-        $event: event
+        $event: event,
     });
-}
-
+};
 
 /**
  * * --- Heart Emotes --- *
@@ -92,7 +89,7 @@ export const getUsableHeartEmotes = async () => {
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.all();
-}
+};
 
 export const addHeartEmote = async (channel: string, value: string) => {
     const sql = `INSERT OR REPLACE INTO ${TableNames.TWITCH_HEART_EMOTES} (channel, emoteName, disabled) VALUES ($channel, $emoteName, 0)`;
@@ -100,18 +97,18 @@ export const addHeartEmote = async (channel: string, value: string) => {
     const stmt = await db.prepare(sql);
     return stmt.run({
         $channel: channel,
-        $emoteName: value
-    })
-}
+        $emoteName: value,
+    });
+};
 
 export const removeHeartEmote = async (value: string) => {
     const sql = `DELETE FROM ${TableNames.TWITCH_HEART_EMOTES} WHERE emoteName=$value`;
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.run({
-        $value: value
+        $value: value,
     });
-}
+};
 
 export const toggleHeartEmotesByChannel = async (channel: string, value: boolean) => {
     const sql = `UPDATE ${TableNames.TWITCH_HEART_EMOTES} SET disabled=$value WHERE channel=$channel`;
@@ -119,9 +116,9 @@ export const toggleHeartEmotesByChannel = async (channel: string, value: boolean
     const stmt = await db.prepare(sql);
     return stmt.run({
         $channel: channel,
-        $value: !value ? 1 : 0
-    })
-}
+        $value: !value ? 1 : 0,
+    });
+};
 
 /**
  * * --- Channel Management --- *
@@ -132,14 +129,14 @@ export const getJoinableChannels = async () => {
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.all();
-}
+};
 
 export const addChannelToStoredChannels = async (channel: string) => {
     const sql = `INSERT OR REPLACE INTO ${TableNames.CONNECTED_CHANNELS} (name, blacklisted) VALUES (?, 0)`;
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.run(channel);
-}
+};
 
 export const updateBlacklistedChannels = async (channel: string, value: boolean) => {
     const sql = `UPDATE ${TableNames.CONNECTED_CHANNELS} SET blacklisted=$value WHERE name=$channel`;
@@ -147,9 +144,9 @@ export const updateBlacklistedChannels = async (channel: string, value: boolean)
     const stmt = await db.prepare(sql);
     return stmt.run({
         $channel: channel,
-        $value: !value ? 0 : 1
+        $value: !value ? 0 : 1,
     });
-}
+};
 
 /**
  * * --- Discord Webhooks --- *
@@ -158,7 +155,7 @@ export const updateBlacklistedChannels = async (channel: string, value: boolean)
 export const getValidDiscordWebhookURLs = async () => {
     const table = await getAllRows('DISCORD_WEBHOOK_URLS');
     return table;
-}
+};
 
 export const addDiscordWebhookURL = async (channel: string, url: string) => {
     const sql = `INSERT OR REPLACE INTO ${TableNames.DISCORD_WEBHOOK_URLS} (channel, url) values ($channel, $url)`;
@@ -166,9 +163,9 @@ export const addDiscordWebhookURL = async (channel: string, url: string) => {
     const stmt = await db.prepare(sql);
     return stmt.run({
         $channel: channel,
-        $url: url
+        $url: url,
     });
-}
+};
 
 /**
  * * --- Work In Progress --- *
@@ -180,4 +177,4 @@ export const addIdToChannel = async (channel: string, id: string) => {
     const db = await getDB();
     const stmt = await db.prepare(sql);
     return stmt.run(id, channel);
-}
+};

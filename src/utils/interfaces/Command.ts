@@ -1,5 +1,5 @@
-import { MessageOptions } from "../MessageOptions";
-import { Permissions } from "../constants";
+import { MessageOptions } from '../MessageOptions';
+import { Permissions } from '../constants';
 
 export interface Command {
     name: string;

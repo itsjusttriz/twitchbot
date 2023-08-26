@@ -1,12 +1,14 @@
-import { ChatUserstate } from "tmi.js";
-import { Permissions } from "./constants";
+import { ChatUserstate } from 'tmi.js';
+import { Permissions } from './constants';
 
 export function isVip(tags: ChatUserstate) {
     return !!tags.badges?.vip;
 }
 
 export function isSubOrAbove(tags: ChatUserstate) {
-    return !!tags['subscriber'] || !!tags['badges']?.['subscriber'] || !!tags['badges']?.['founder'] || isModOrAbove(tags);
+    return (
+        !!tags['subscriber'] || !!tags['badges']?.['subscriber'] || !!tags['badges']?.['founder'] || isModOrAbove(tags)
+    );
 }
 
 export function isModOrAbove(tags: ChatUserstate) {
@@ -28,8 +30,8 @@ export function getPermissions(tags: ChatUserstate) {
         [Permissions.MODERATOR]: isModOrAbove(tags),
         [Permissions.VIP]: isVip(tags),
         [Permissions.SUBSCRIBER]: isSubOrAbove(tags),
-        [Permissions.REGULAR]: true
-    }
+        [Permissions.REGULAR]: true,
+    };
 }
 
 export function hasPermission(tags: ChatUserstate, reqPerm: keyof typeof Permissions) {

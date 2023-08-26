@@ -1,12 +1,15 @@
-import { ITime } from "@itsjusttriz/utils";
-import { MessageOptions } from "../../utils/MessageOptions";
-import { logger as _logger } from "../../utils/Logger";
+import { ITime } from '@itsjusttriz/utils';
+import { MessageOptions } from '../../utils/MessageOptions';
+import { Logger } from '@itsjusttriz/logger';
 
-const logger = _logger.setPrefix('[Listener/BadJokesHandler]');
+const logger = new Logger({
+    customPrefix: '[Listener/BadJokesHandler]',
+});
+
 const FOURTY_SEVEN_USER_ID = '26797038';
 
 const storeBadJokeTriggers = async (opts: MessageOptions, map: Map<string, boolean>) => {
-    const roomId = opts.tags["room-id"];
+    const roomId = opts.tags['room-id'];
     if (!roomId) {
         logger.error('Channel ID not stored. Escaping...');
         return;
@@ -23,11 +26,11 @@ const storeBadJokeTriggers = async (opts: MessageOptions, map: Map<string, boole
         map.delete(roomId);
         logger.info(`Attempted to remove "${roomId}" from channel-map.`);
     });
-}
+};
 
 export const handleBadJokes = async (opts: MessageOptions, map: Map<string, boolean>) => {
     const triggers = ['badjoke'];
-    const is47y = opts.tags["user-id"] === FOURTY_SEVEN_USER_ID;
+    const is47y = opts.tags['user-id'] === FOURTY_SEVEN_USER_ID;
 
     if (triggers.includes(opts.command)) {
         logger.info(`!${opts.command} was triggered in ${opts.channel}.`);
@@ -35,11 +38,10 @@ export const handleBadJokes = async (opts: MessageOptions, map: Map<string, bool
         return;
     }
 
-    const isHandled = map.has(opts.tags["room-id"]);
+    const isHandled = map.has(opts.tags['room-id']);
     if (is47y) {
         if (!isHandled) {
-            if (opts.client.settings.debug.isToggled)
-                logger.error('Channel ID not stored. Escaping...');
+            if (opts.client.settings.debug.isToggled) logger.error('Channel ID not stored. Escaping...');
             return;
         }
 
@@ -48,4 +50,4 @@ export const handleBadJokes = async (opts: MessageOptions, map: Map<string, bool
         return;
     }
     return;
-}
+};
