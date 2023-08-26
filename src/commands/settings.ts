@@ -30,8 +30,8 @@ export const command = {
 
         let hasUpdated: boolean = true;
         if (['*'].includes(opts.client.settings[option])) hasUpdated = false;
-        else opts.client.settings[option].isToggled = boolVal === 'true';
-        if (opts.client.settings.debug.isToggled)
+        else opts.client.settings[option].enabled = boolVal === 'true';
+        if (opts.client.settings.debug.enabled)
             logger.sysDebug.info(
                 `${hasUpdated ? 'Updated' : 'Failed to Update'} Client Settings: ${JSON.stringify({
                     [option]: opts.client.settings[option],

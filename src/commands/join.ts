@@ -9,13 +9,15 @@ export const command = {
     blacklisted_channels: ['stackupdotorg'],
 
     run: async (opts) => {
-        for (const c of opts.args) {
-            const joined = await opts.chatClient.join(c).catch(async (e) => {
-                logger.sysChat.error(`Failed to join ${c}: ${e}`);
-                await opts.chatClient.say(opts.channel, `Failed to join channel: ${c}`);
-            });
-            await opts.chatClient.say(opts.channel, `@${opts.user} -> Joining ${joined}`);
-        }
+        const callbacks = opts.args.map((c) => opts.chatClient.join(c));
+        const promises = await Promise.allSettled(callbacks);
+
+        const fulfilled = promises.filter((promise) => promise.status === 'fulfilled');
+        const rejected = promises.filter((promise) => promise.status === 'rejected');
+
+        logger.sysChat.error('Failed - JOIN - Channels: ', rejected);
+        logger.sysChat.success('Success - JOIN - Channels: ', fulfilled);
+
         return;
     },
 } as Command;

@@ -13,13 +13,15 @@ export const command = {
         const caster = isCaster ? [opts.user] : [];
         const list = isOwner(opts.tags) ? opts.args : caster;
 
-        for (const channel of list) {
-            const parted = await opts.chatClient.part(channel).catch(async (e) => {
-                logger.sysChat.error(`Failed to leave ${channel}: ${e}`);
-                await opts.chatClient.say(opts.channel, `Failed to leave channel: ${channel}`);
-            });
-            await opts.chatClient.say(opts.channel, `@${opts.user} -> Leaving ${parted}`);
-        }
+        const callbacks = list.map((c) => opts.chatClient.part(c));
+        const promises = await Promise.allSettled(callbacks);
+
+        const fulfilled = promises.filter((promise) => promise.status === 'fulfilled');
+        const rejected = promises.filter((promise) => promise.status === 'rejected');
+
+        logger.sysChat.error('Failed - PART - Channels: ', rejected);
+        logger.sysChat.success('Success - PART - Channels: ', fulfilled);
+
         return;
     },
 } as Command;

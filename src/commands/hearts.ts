@@ -8,24 +8,29 @@ export const command = {
     aliases: [],
     permission: Permissions.MODERATOR,
     run: async (opts) => {
-        const hearts = await getUsableHeartEmotes().catch((e) => {
+        const _hearts = await getUsableHeartEmotes().catch((e) => {
             logger.sysDebug.error(e);
-            return;
+            return [];
         });
 
-        if (!hearts || !hearts.length) {
-            if (opts.client.settings.debug.isToggled)
+        if (!_hearts.length) {
+            if (opts.client.settings.debug.enabled)
                 await opts.chatClient.say(opts.channel, 'Failed to run db::getUsableHeartEmotes().');
             return;
         }
 
-        const mapped = hearts.map((x) => x.emoteName);
-        const shuffled = mapped
+        const formattedString = _hearts
+            // Convert to array of 'emoteName'.
+            .map((x) => x.emoteName)
+            // Allow for randomising order.
             .map((value) => ({ value, sort: Math.random() }))
+            // Sort the array in ascending order using new 'sort' values.
             .sort((a, b) => a.sort - b.sort)
-            .map(({ value }) => value);
-        const stringified = shuffled.join(' ');
+            // Convert back to 'emoteNames' keeping the new order in mind.
+            .map(({ value }) => value)
+            // Convert from array to space-seperated string.
+            .join(' ');
 
-        await opts.chatClient.say(opts.channel, stringified);
+        await opts.chatClient.say(opts.channel, formattedString);
     },
 } as Command;

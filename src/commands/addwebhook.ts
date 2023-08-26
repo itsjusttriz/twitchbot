@@ -4,12 +4,12 @@ import { Command } from '../utils/interfaces';
 import { addDiscordWebhookURL } from '../utils/sqlite';
 
 export const command = {
-    name: 'addreminderhook',
+    name: 'addwebhook',
     aliases: [],
     permission: Permissions.OWNER,
     requiresInput: true,
     maxArgs: 2,
-    maxArgsErrorMessage: 'Usage: !addreminderhook <channel> <webhookUrl>',
+    maxArgsErrorMessage: 'Usage: !addwebhook <channel> <webhookUrl>',
     blacklisted_channels: ['stackupdotorg'],
     run: async (opts) => {
         const _error = 'Oops! Something went wrong. Check console for more info.';
