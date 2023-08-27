@@ -95,13 +95,13 @@ export const event = {
                     new EmbedBuilder({
                         title: `Raid Event - ${logObj.channel}`,
                         description: [
-                            `This event response **${shouldRespondToEvent}** triggered.\n`,
+                            `This event response **${shouldRespondToEvent ? 'WAS' : 'WAS NOT'}** triggered.\n`,
                             ...Object.entries({
                                 Raider: logObj.raider,
                                 isDisabled: `${isDisabled}`.toUpperCase(),
                                 Viewers: logObj.viewers,
                                 'Min. Viewers': logObj.trigger,
-                            }).map((key, value) => {
+                            }).map(([key, value]) => {
                                 return `**${key}:** \` ${value} \``;
                             }),
 

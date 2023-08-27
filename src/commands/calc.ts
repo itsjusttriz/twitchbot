@@ -18,7 +18,7 @@ export const command = {
                 logger.svcDecApi.error('Something went wrong?');
                 await opts.chatClient.say(opts.channel, 'Something went wrong?');
             }
-            await opts.chatClient.say(opts.channel, result);
+            await opts.chatClient.say(opts.channel, result.toString());
         } catch (error) {
             logger.svcDecApi.error('Something went wrong?', error);
             await opts.chatClient.say(opts.channel, 'Something went wrong? An error has been recorded.');

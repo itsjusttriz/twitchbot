@@ -59,7 +59,7 @@ export const event = {
             return;
         }
 
-        if (client.settings.isMuted) return;
+        if (client.settings.isMuted && opts.msg !== '!bot mute') return;
         cmd.run(opts);
     },
 } as Event;

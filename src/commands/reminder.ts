@@ -1,3 +1,4 @@
+import { EmbedBuilder } from 'discord.js';
 import { dehashChannel } from '../helper/dehash-channels';
 import { logger } from '../utils/Logger';
 import { Permissions } from '../utils/constants';
@@ -12,14 +13,19 @@ export const command = {
         const channel = dehashChannel(opts.channel);
         const hook = opts.client.discordWebhooks?.get(channel);
         if (!hook) {
-            logger.sysDebug.error(`No webhook found for channel (channel)`);
+            logger.sysDebug.error(`No webhook found for channel (${channel})`);
             return;
         }
 
         await hook
             .send({
-                username: `Twitch Reminder - @${opts.user}`,
-                content: `${opts.msgText}`,
+                username: `Twitch Reminder`,
+                embeds: [
+                    new EmbedBuilder({
+                        title: `@${opts.user}`,
+                        description: opts.msgText,
+                    }),
+                ],
             })
             .then(async (msg) => {
                 if (!msg.id) {

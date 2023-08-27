@@ -22,7 +22,7 @@ export const command = {
 
         const channel = dehashChannel(_channel);
 
-        if (!['toggle', 'edit'].includes(action)) {
+        if (!['toggle', 'editmsg', 'edittrigger'].includes(action)) {
             await opts.chatClient.say(
                 opts.channel,
                 "You must declare which action you'd like to perform! (toggle, edit)"
