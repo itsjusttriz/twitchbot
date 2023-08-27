@@ -8,7 +8,7 @@ export const event = {
     run: async (client, address: string, port: string) => {
         logger.sysEvent.success(`Connected to ${address} - ${port}`);
 
-        if (client.settings?.debug.isToggled) {
+        if (client.settings?.debug.enabled) {
             await client.chat.join(client.settings.debug.logChannel);
             return;
         }

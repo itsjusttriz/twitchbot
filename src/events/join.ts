@@ -1,3 +1,4 @@
+import { dehashChannel } from '../helper/dehash-channels';
 import { updateStoredChannels } from '../helper/update-stored-channels';
 import { Event } from '../utils/interfaces/Event';
 import { logger } from '../utils/Logger';
@@ -12,8 +13,8 @@ export const event = {
         if (client.settings.debug.enabled) client.chat.say(client.settings.debug.logChannel, `Joined ${channel}`);
         logger.sysEvent.info(`Joined ${channel}`);
 
-        if (!client.settings.debug)
-            await updateStoredChannels(channel.replace('#', ''), 'ADD').catch((e) => {
+        if (!client.settings.debug.enabled)
+            await updateStoredChannels(dehashChannel(channel), 'ADD').catch((e) => {
                 logger.sysEvent.error(`Failed to run updateStoredChannels() of type "ADD": ${e}`);
             });
         return;

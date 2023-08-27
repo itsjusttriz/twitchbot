@@ -46,7 +46,7 @@ export const event = {
         if (cmd?.minArgs && opts.args.length < cmd.minArgs) {
             await chat.say(
                 opts.channel,
-                `${opts.user} => ${cmd.min_args_error_message || 'Not enough arguments. Try again!'}`
+                `${opts.user} -> ${cmd.min_args_error_message || 'Not enough arguments. Try again!'}`
             );
             return;
         }
@@ -59,6 +59,7 @@ export const event = {
             return;
         }
 
+        if (client.settings.isMuted) return;
         cmd.run(opts);
     },
 } as Event;

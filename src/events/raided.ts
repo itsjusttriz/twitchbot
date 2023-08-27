@@ -72,10 +72,10 @@ export const event = {
 
         for (const line of response) {
             if (!shouldRespondToEvent) break;
-            else
-                await client.chat.say(chan, line).catch((e) => {
-                    logger.sysDebug.error(`Failed to send message in channel (${chan}): "${line}"`);
-                });
+            if (client.settings.isMuted) break;
+            await client.chat.say(chan, line).catch((e) => {
+                logger.sysDebug.error(`Failed to send message in channel (${chan}): "${line}"`);
+            });
         }
 
         if (!hook) return;

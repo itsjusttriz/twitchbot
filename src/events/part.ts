@@ -14,7 +14,7 @@ export const event = {
 
         logger.sysEvent.info(`Left ${channel}`);
 
-        if (!client.settings.debug.isToggled)
+        if (!client.settings.debug.enabled)
             await updateStoredChannels(dehashChannel(channel), 'REMOVE').catch((e) => {
                 logger.sysEvent.error(`Failed to run updateStoredChannels() of type "REMOVE": ${e}`);
             });
