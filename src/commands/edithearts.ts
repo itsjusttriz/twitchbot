@@ -1,8 +1,8 @@
-import { dehashChannel } from '../helper/dehash-channels';
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
-import { addHeartEmote, removeHeartEmote, toggleHeartEmotesByChannel } from '../utils/sqlite';
+import { addHeartEmote, removeHeartEmote } from '../utils/sqlite';
 
 export const command = {
     name: 'edithearts',
@@ -13,10 +13,6 @@ export const command = {
     blacklisted_channels: ['stackupdotorg'],
     run: async (opts) => {
         const [option, _channel, ...extraText] = opts.args;
-        if (!option) {
-            await opts.chatClient.say(opts.channel, "Parameter 'option' is required.");
-            return;
-        }
 
         if (!['+', 'add', '-', 'remove'].includes(option.toLowerCase())) {
             await opts.chatClient.say(
@@ -26,24 +22,20 @@ export const command = {
             return;
         }
 
-        const channel = dehashChannel(_channel);
-
-        let succeeded = [];
-        let failed = [];
+        const channel = _.dehashChannel(_channel);
+        let succeeded = new Set<string>();
+        let failed = new Set<string>();
 
         switch (option.toLowerCase()) {
             case '+':
             case 'add':
                 for (const heart of extraText) {
-                    const stmt = await addHeartEmote(channel, heart).catch((e) => {
-                        if (!failed.includes(heart)) failed.push(heart);
-                        logger.sysDebug.error(e);
-                        return { changes: 0 };
-                    });
-                    if (!stmt.changes) {
-                        if (!failed.includes(heart)) failed.push(heart);
-                    } else {
-                        if (!succeeded.includes(heart)) succeeded.push(heart);
+                    try {
+                        const stmt = await addHeartEmote(channel, heart).catch((e) => ({ changes: 0 }));
+                        !stmt.changes ? failed.add(heart) : succeeded.add(heart);
+                    } catch (error) {
+                        logger.sysDebug.error(error);
+                        failed.add(heart);
                     }
                 }
                 break;
@@ -51,15 +43,12 @@ export const command = {
             case '-':
             case 'remove':
                 for (const heart of extraText) {
-                    const stmt = await removeHeartEmote(heart).catch((e) => {
-                        if (!failed.includes(heart)) failed.push(heart);
-                        logger.sysDebug.error(e);
-                        return { changes: 0 };
-                    });
-                    if (!stmt.changes) {
-                        if (!failed.includes(heart)) failed.push(heart);
-                    } else {
-                        if (!succeeded.includes(heart)) succeeded.push(heart);
+                    try {
+                        const stmt = await removeHeartEmote(heart).catch((e) => ({ changes: 0 }));
+                        !stmt.changes ? failed.add(heart) : succeeded.add(heart);
+                    } catch (error) {
+                        logger.sysDebug.error(error);
+                        failed.add(heart);
                     }
                 }
                 break;
@@ -68,17 +57,16 @@ export const command = {
             }
         }
 
-        if (succeeded.length)
+        const optionIsToAdd = ['+', 'add'].includes(option.toLowerCase());
+        if (succeeded.size)
             await opts.chatClient.say(
                 opts.channel,
-                `${['+', 'add'].includes(option.toLowerCase()) ? 'Added' : 'Removed'} hearts (${succeeded.join(
-                    ' '
-                )}) from channel (${channel}).`
+                `${optionIsToAdd ? 'Added' : 'Removed'} hearts (${[...succeeded].join(' ')}) from channel (${channel}).`
             );
-        if (failed.length)
+        if (failed.size)
             await opts.chatClient.say(
                 opts.channel,
-                `Failed to ${['+', 'add'].includes(option.toLowerCase()) ? 'add' : 'remove'} hearts (${failed.join(
+                `Failed to ${optionIsToAdd ? 'add' : 'remove'} hearts (${[...failed].join(
                     ' '
                 )}) from channel (${channel}).`
             );

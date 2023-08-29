@@ -1,5 +1,5 @@
-import { dehashChannel } from '../helper/dehash-channels';
 import { updateStoredChannels } from '../helper/update-stored-channels';
+import { _ } from '../utils';
 import { Event } from '../utils/interfaces/Event';
 import { logger } from '../utils/Logger';
 
@@ -14,10 +14,13 @@ export const event = {
 
         logger.sysEvent.info(`Left ${channel}`);
 
-        if (!client.settings.debug.enabled)
-            await updateStoredChannels(dehashChannel(channel), 'REMOVE').catch((e) => {
-                logger.sysEvent.error(`Failed to run updateStoredChannels() of type "REMOVE": ${e}`);
-            });
+        if (!client.settings.debug.enabled) {
+            try {
+                await updateStoredChannels(_.dehashChannel(channel), 'REMOVE');
+            } catch (error) {
+                logger.sysEvent.error(`Failed to run updateStoredChannels() of type "REMOVE": ${error}`);
+            }
+        }
         return;
     },
 } as Event;

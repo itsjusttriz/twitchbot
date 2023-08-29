@@ -8,18 +8,18 @@ export const command = {
     aliases: [],
     permission: Permissions.MODERATOR,
     run: async (opts) => {
-        const _hearts = await getUsableHeartEmotes().catch((e) => {
+        const hearts = await getUsableHeartEmotes().catch((e) => {
             logger.sysDebug.error(e);
             return [];
         });
 
-        if (!_hearts.length) {
+        if (!hearts.length) {
             if (opts.client.settings.debug.enabled)
                 await opts.chatClient.say(opts.channel, 'Failed to run db::getUsableHeartEmotes().');
             return;
         }
 
-        const formattedString = _hearts
+        const formattedString = hearts
             // Convert to array of 'emoteName'.
             .map((x) => x.emoteName)
             // Allow for randomising order.

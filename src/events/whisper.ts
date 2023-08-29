@@ -10,14 +10,14 @@ export const event = {
         // Don't listen to my own messages..
         if (self) return;
 
-        await client.chat
-            .whisper(
+        try {
+            await client.chat.whisper(
                 tags.username,
                 'Commands are not functional via whispers. Please try again, in a mutually connected channel.'
-            )
-            .catch((e) => {
-                logger.sysEvent.error(`Failed to whisper ${tags.username}:`, e);
-            });
+            );
+        } catch (error) {
+            logger.sysEvent.error(`[EVENTS/WHISPER] -> Failed to reply to ${tags.username}:`, error);
+        }
         return;
     },
 } as Event;

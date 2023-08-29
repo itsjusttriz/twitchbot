@@ -87,8 +87,8 @@ export class ClientController {
             hook.rest.on('rateLimited', async (info) => {
                 const timeLeft = info.timeToReset / 1000;
                 await this.chat.say(
-                    'ijtdev',
-                    `DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
+                    this.settings.debug.logChannel,
+                    `@itsjusttriz -> DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
                 );
             });
             this.discordWebhooks.set(channel, hook);

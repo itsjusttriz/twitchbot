@@ -1,3 +1,4 @@
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
@@ -22,15 +23,17 @@ export const command = {
             return;
         }
 
-        const isValidBoolean = ['true', 'false'].includes(boolVal?.toLowerCase());
+        const isValidBoolean = _.isStringABoolean(boolVal);
         if (!isValidBoolean) {
             opts.chatClient.say(opts.channel, 'Invalid value. Must be true/false.');
             return;
         }
 
         let hasUpdated: boolean = true;
+
         if (['*'].includes(opts.client.settings[option])) hasUpdated = false;
         else opts.client.settings[option].enabled = boolVal === 'true';
+
         if (opts.client.settings.debug.enabled)
             logger.sysDebug.info(
                 `${hasUpdated ? 'Updated' : 'Failed to Update'} Client Settings: ${JSON.stringify({

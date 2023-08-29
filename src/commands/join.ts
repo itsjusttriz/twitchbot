@@ -1,7 +1,7 @@
-import { Command } from '../utils/interfaces';
-import { Permissions } from '../utils/constants';
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { dehashChannel } from '../helper/dehash-channels';
+import { Permissions } from '../utils/constants';
+import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'join',
@@ -10,15 +10,16 @@ export const command = {
     blacklisted_channels: ['stackupdotorg'],
 
     run: async (opts) => {
-        const callbacks = opts.args.map((c) => opts.chatClient.join(c));
+        const list = [...new Set(opts.args)];
+        const callbacks = list.map((c) => opts.chatClient.join(c));
         const promises = await Promise.allSettled(callbacks);
 
         const fulfilled = promises
             .filter((promise) => promise.status === 'fulfilled')
             .map((f) => f['value'])
             .flat(Infinity)
-            .map((c) => dehashChannel(c));
-        const rejectedChans = opts.args.filter((c) => !fulfilled.includes(c));
+            .map((c) => _.dehashChannel(c));
+        const rejectedChans = list.filter((c) => !fulfilled.includes(c));
 
         logger.sysChat.error('Failed - JOIN - Channels: ' + JSON.stringify(rejectedChans, null, 4));
         logger.sysChat.success('Success - JOIN - Channels: ' + JSON.stringify(fulfilled, null, 4));

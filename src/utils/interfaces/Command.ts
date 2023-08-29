@@ -5,6 +5,8 @@ export interface Command {
     name: string;
     aliases?: string[];
     permission: keyof typeof Permissions;
+
+    isUnmutable?: boolean;
     isDisabled?: boolean;
 
     requiresInput?: boolean;

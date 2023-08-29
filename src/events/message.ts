@@ -25,25 +25,25 @@ export const event = {
         if (self || !msg.startsWith(client.settings.prefix)) return;
 
         const cmd = client.commands.get(opts.command);
-        const isValidCommandName = cmd?.name === opts.command || cmd?.aliases?.includes(opts.command);
+        const isValidCommandName = cmd.name === opts.command || cmd.aliases?.includes(opts.command);
 
-        if (!isValidCommandName) return;
+        if (!cmd || !isValidCommandName) return;
         if (!hasPermission(tags, cmd.permission)) return;
-        if (cmd?.blacklisted_channels?.length && cmd?.blacklisted_channels?.includes(opts.dehashedChannel)) return;
+        if (cmd.blacklisted_channels?.length && cmd.blacklisted_channels?.includes(opts.dehashedChannel)) return;
         if (
-            cmd?.whitelisted_channels?.length &&
-            !cmd?.whitelisted_channels?.includes(opts.dehashedChannel) &&
+            cmd.whitelisted_channels?.length &&
+            !cmd.whitelisted_channels?.includes(opts.dehashedChannel) &&
             opts.dehashedChannel !== client.settings.debug.logChannel
         )
             return;
-        if (cmd?.whitelisted_users && !cmd?.whitelisted_users.includes(opts.user)) return;
+        if (cmd.whitelisted_users && !cmd.whitelisted_users.includes(opts.user)) return;
 
-        if (cmd?.requiresInput && !opts.msgText) {
+        if (cmd.requiresInput && !opts.msgText) {
             await chat.say(opts.channel, `${opts.user} -> This command requires input. Try again!`);
             return;
         }
 
-        if (cmd?.minArgs && opts.args.length < cmd.minArgs) {
+        if (cmd.minArgs && opts.args.length < cmd.minArgs) {
             await chat.say(
                 opts.channel,
                 `${opts.user} -> ${cmd.min_args_error_message || 'Not enough arguments. Try again!'}`
@@ -51,7 +51,7 @@ export const event = {
             return;
         }
 
-        if (cmd?.maxArgs && opts.args.length > cmd.maxArgs) {
+        if (cmd.maxArgs && opts.args.length > cmd.maxArgs) {
             await chat.say(
                 opts.channel,
                 `${opts.user} -> ${cmd.max_args_error_message || 'Too many arguments. Try again!'}`
@@ -59,7 +59,7 @@ export const event = {
             return;
         }
 
-        if (client.settings.isMuted && opts.msg !== '!bot mute') return;
+        if (client.settings.isMuted && !cmd.isUnmutable) return;
         cmd.run(opts);
     },
 } as Event;

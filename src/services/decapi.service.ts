@@ -11,11 +11,13 @@ const api = axios.create({
 export const decApi = {
     async calculate(exp: string) {
         const qs = new URLSearchParams({ exp });
-        const resp = await api.get(`/math?${qs}`).catch((e) => {
-            logger.svcDecApi.error(e);
-            return { data: undefined };
-        });
 
-        return resp.data;
+        try {
+            const resp = await api.get(`/math?${qs}`);
+            return resp.data;
+        } catch (error) {
+            logger.svcDecApi.error(error);
+            return { data: undefined };
+        }
     },
 };

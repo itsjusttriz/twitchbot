@@ -1,7 +1,8 @@
+import { EmbedBuilder } from 'discord.js';
 import { SubGiftUserstate, SubMethods } from 'tmi.js';
-import { Event } from '../utils/interfaces/Event';
 import { ClientController } from '../controllers/client.controller';
 import { logger } from '../utils/Logger';
+import { Event } from '../utils/interfaces/Event';
 
 const handleSelfSubs = async (
     client: typeof ClientController,
@@ -16,24 +17,23 @@ const handleSelfSubs = async (
     }
     const hook = client.discordWebhooks.get(recipient);
     if (!hook) {
-        logger.sysDebug.error('Couldnt retrieve DiscordWebhook for logging inside event::subgift');
+        logger.sysDebug.error('Couldnt retrieve DiscordWebhook for logging inside event (SubGift)');
         return;
     }
+
     const plan = methods.plan !== 'Prime' ? (parseInt(methods.plan) / 1000).toString() : 'Prime';
 
-    console.log({ username, recipient, channel, plan, hook });
-    const m = await hook
-        .send({
-            username: 'Twitch SubGifts',
-            content: `<@!228167686293553164> - A Giftsub (Tier ${plan}) was received from "${username}" on "${channel}". Dont forget to enable the !hearts emoteset for this channel!`,
-        })
-        .catch((err) => {
-            logger.sysDebug.error(err);
-            return;
-        });
+    const embed = new EmbedBuilder()
+        .setTitle(`Twitch Channel Point Redemption Event - ${channel}`)
+        .setDescription(
+            `<@!228167686293553164> - A Giftsub (Tier ${plan}) was received from "${username}" on "${channel}". Dont forget to enable the !hearts emoteset for this channel!`
+        );
 
-    if (m && m?.id) {
+    try {
+        await hook.send({ username: 'TwitchBot Log', embeds: [embed] });
         logger.sysDebug.success('Sent GiftSub info to Discord.');
+    } catch (error) {
+        logger.sysDebug.error(error);
     }
     return;
 };
@@ -50,9 +50,11 @@ export const event = {
         methods: SubMethods,
         userstate: SubGiftUserstate
     ) => {
-        await handleSelfSubs(client, recipient, methods, username, channel).catch((e) => {
-            logger.sysDebug.error(e);
-        });
+        try {
+            await handleSelfSubs(client, recipient, methods, username, channel);
+        } catch (error) {
+            logger.sysDebug.error(error);
+        }
         return;
     },
 } as Event;

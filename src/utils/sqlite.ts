@@ -1,5 +1,5 @@
-import sqlite3 from 'sqlite3';
 import { Database, open } from 'sqlite';
+import sqlite3 from 'sqlite3';
 import { TableNames } from './constants';
 
 let _cachedDatabase: Promise<Database<sqlite3.Database, sqlite3.Statement>>;

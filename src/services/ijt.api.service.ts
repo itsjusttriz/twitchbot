@@ -11,21 +11,25 @@ const api = axios.create({
 export const ijtApi = {
     async getModpack(id: string) {
         const qs = new URLSearchParams({ raw: 'true' });
-        const resp = await api.get(`/minecraft/get/${id}?${qs}`).catch((e) => {
-            logger.svcIjtApi.error(e);
-            return { data: undefined };
-        });
 
-        return resp.data;
+        try {
+            const resp = await api.get(`/minecraft/get/${id}?${qs}`);
+            return resp.data;
+        } catch (error) {
+            logger.svcIjtApi.error(error);
+            return { data: undefined };
+        }
     },
 
     async checkNightbotStatus() {
         const qs = new URLSearchParams({ msgs: 'test' });
-        const resp = await api.get(`/nightbot/multiline?${qs}`).catch((e) => {
-            logger.svcIjtApi.error(e);
-            return { data: undefined };
-        });
 
-        return !resp.data ? false : true;
+        try {
+            const resp = await api.get(`/nightbot/multiline?${qs}`);
+            return resp.data && resp.data?.code === 200;
+        } catch (error) {
+            logger.svcIjtApi.error(error);
+            return false;
+        }
     },
 };

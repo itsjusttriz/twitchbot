@@ -1,6 +1,6 @@
 import { ChatUserstate } from 'tmi.js';
 import { ClientController } from '../controllers/client.controller.js';
-import { dehashChannel } from '../helper/dehash-channels.js';
+import { _ } from './index.js';
 
 export class MessageOptions {
     channel: string;
@@ -36,6 +36,6 @@ export class MessageOptions {
     }
 
     get dehashedChannel() {
-        return dehashChannel(this.channel);
+        return _.dehashChannel(this.channel);
     }
 }

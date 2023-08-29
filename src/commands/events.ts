@@ -1,4 +1,4 @@
-import { dehashChannel } from '../helper/dehash-channels';
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
@@ -19,13 +19,13 @@ export const command = {
     min_args_error_message: 'Usage: !events <channel> <action> <eventName> <...value>',
     run: async (opts) => {
         const [_channel, action, eventName, ...extraText] = opts.args;
+        const channel = _.dehashChannel(_channel);
 
-        const channel = dehashChannel(_channel);
-
-        if (!['toggle', 'editmsg', 'edittrigger'].includes(action)) {
+        const possibleActions = ['toggle', 'editmsg', 'edittrigger'];
+        if (!possibleActions.includes(action.toLowerCase())) {
             await opts.chatClient.say(
                 opts.channel,
-                "You must declare which action you'd like to perform! (toggle, edit)"
+                `You must declare which action you'd like to perform! (${possibleActions.join(', ')})`
             );
             return;
         }
@@ -42,12 +42,15 @@ export const command = {
                     return;
                 }
 
-                const stmt = await toggleChannelEvent(channel, eventName, extraText[0] === 'true').catch((e) => {
-                    logger.db.error(e);
-                    return { changes: 0 };
-                });
-
-                shouldSendResponse = !!stmt.changes;
+                try {
+                    const stmt = await toggleChannelEvent(channel, eventName, extraText[0] === 'true').catch((e) => ({
+                        changes: 0,
+                    }));
+                    shouldSendResponse = !!stmt.changes;
+                } catch (error) {
+                    logger.db.error(error);
+                    shouldSendResponse = false;
+                }
                 break;
             }
             case 'editmsg': {
@@ -58,12 +61,16 @@ export const command = {
                     );
                     return;
                 }
-                const stmt = await updateChannelRaidEventMessage(channel, eventName, extraText.join(' ')).catch((e) => {
-                    logger.db.error(e);
-                    return { changes: 0 };
-                });
 
-                shouldSendResponse = !!stmt.changes;
+                try {
+                    const stmt = await updateChannelRaidEventMessage(channel, eventName, extraText.join(' ')).catch(
+                        (e) => ({ changes: 0 })
+                    );
+                    shouldSendResponse = !!stmt.changes;
+                } catch (error) {
+                    logger.db.error(error);
+                    shouldSendResponse = false;
+                }
                 break;
             }
             case 'edittrigger': {
@@ -84,14 +91,17 @@ export const command = {
                     return;
                 }
 
-                const stmt = await updateChannelRaidEventTrigger(channel, eventName, triggerAmount.toString()).catch(
-                    (e) => {
-                        logger.db.error(e);
-                        return { changes: 0 };
-                    }
-                );
-
-                shouldSendResponse = !!stmt.changes;
+                try {
+                    const stmt = await updateChannelRaidEventTrigger(
+                        channel,
+                        eventName,
+                        triggerAmount.toString()
+                    ).catch((e) => ({ changes: 0 }));
+                    shouldSendResponse = !!stmt.changes;
+                } catch (error) {
+                    logger.db.error(error);
+                    shouldSendResponse = false;
+                }
                 break;
             }
         }

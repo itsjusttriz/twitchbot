@@ -6,6 +6,7 @@ export const command = {
     name: 'bot',
     aliases: ['process'],
     permission: Permissions.OWNER,
+    isUnmutable: true,
     run: async (opts) => {
         const subcmd = opts.args[0];
         if (!subcmd) {
