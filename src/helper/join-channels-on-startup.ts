@@ -1,4 +1,5 @@
 import { ClientController } from '../controllers/client.controller';
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { getJoinableChannels } from '../utils/sqlite';
 
@@ -20,9 +21,12 @@ export async function joinChannelsOnStartup(client: typeof ClientController) {
     const fulfilled = promises
         .filter((promise) => promise.status === 'fulfilled')
         .map((f) => f['value'])
-        .flat(Infinity);
+        .flat(Infinity)
+        .map((c) => _.dehashChannel(c));
     const rejectedChans = channels.filter((c) => !fulfilled.includes(c));
 
-    logger.sysChat.error('Failed - JOIN - Channels: ' + JSON.stringify(rejectedChans, null, 4));
-    logger.sysChat.success('Success - JOIN - Channels: ' + JSON.stringify(fulfilled, null, 4));
+    if (client.settings.debug.enabled) {
+        logger.sysChat.error('Failed - JOIN - Channels: ' + JSON.stringify(rejectedChans, null, 4));
+        logger.sysChat.success('Success - JOIN - Channels: ' + JSON.stringify(fulfilled, null, 4));
+    }
 }

@@ -25,9 +25,11 @@ export const event = {
         if (self || !msg.startsWith(client.settings.prefix)) return;
 
         const cmd = client.commands.get(opts.command);
-        const isValidCommandName = cmd.name === opts.command || cmd.aliases?.includes(opts.command);
+        if (!cmd) return;
 
-        if (!cmd || !isValidCommandName) return;
+        const isValidCommandName = cmd.name === opts.command || cmd.aliases?.includes(opts.command);
+        if (!isValidCommandName) return;
+
         if (!hasPermission(tags, cmd.permission)) return;
         if (cmd.blacklisted_channels?.length && cmd.blacklisted_channels?.includes(opts.dehashedChannel)) return;
         if (

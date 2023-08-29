@@ -9,7 +9,7 @@ export async function updateStoredChannels(channel: string, action: keyof typeof
     };
 
     try {
-        return await actions[action]();
+        return await actions[action.toLowerCase()]();
     } catch (error) {
         return handleError(action, error);
     }
