@@ -1,6 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
 import { ChatUserstate } from 'tmi.js';
-import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Event } from '../utils/interfaces/Event';
 
@@ -17,11 +16,6 @@ export const event = {
     ) => {
         logger.sysEvent.info('EVENT/REDEEM -> ' + JSON.stringify({ channel, username, rewardType }, null, 4));
 
-        const chan = _.dehashChannel(channel);
-
-        const hook = client.discordWebhooks.get('ijtdev');
-        if (!hook) return;
-
         const embed = new EmbedBuilder().setTitle(`Twitch Channel Point Redemption Event - ${channel}`).setDescription(
             [
                 // Assign similar formatting.
@@ -36,9 +30,12 @@ export const event = {
         );
 
         try {
+            const hook = client.discordWebhooks.get('ijtdev');
+            if (!hook) throw 'DiscordWebhook not found?!';
+
             await hook.send({ username: `TwitchBot Log`, embeds: [embed] });
         } catch (error) {
-            logger.sysDebug.error('EVENT/REDEEM -> DiscordWebhook failed to send message.');
+            logger.sysDebug.error('EVENT/REDEEM -> DiscordWebhook failed to send message: ' + error);
         }
 
         return;
