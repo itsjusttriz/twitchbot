@@ -1,6 +1,7 @@
 import { Client } from '@twurple/auth-tmi';
 import { BasicObjectProps } from '@itsjusttriz/utils';
 import fs from 'fs';
+import path from 'path';
 
 import { createAuthProvider } from './auth.controller';
 import { Event, Command } from '../utils/interfaces';
@@ -42,10 +43,11 @@ export class ClientController {
     }
 
     static async loadEvents() {
-        const events = fs.readdirSync(process.cwd() + '/dist/events').filter((f) => f.endsWith('.js'));
+        const filePath = path.resolve(__dirname, './events');
+        const events = fs.readdirSync(filePath).filter((f) => f.endsWith('.js'));
 
         for (const event of events) {
-            const { event: e } = (await import(`../events/${event}`)) as { event: Event };
+            const { event: e } = (await import(`${filePath}/${event}`)) as { event: Event };
 
             if (e.isDisabled || client.settings.eventsDisabled) {
                 logger.sysEvent.error(`Found disabled event: ${e.name}`);
@@ -58,10 +60,11 @@ export class ClientController {
     }
 
     static async loadCommands() {
-        const commands = fs.readdirSync(process.cwd() + '/dist/commands').filter((f) => f.endsWith('.js'));
+        const filePath = path.resolve(__dirname, './commands');
+        const commands = fs.readdirSync(filePath).filter((f) => f.endsWith('.js'));
 
         for (const cmdName of commands) {
-            const { command: cmd } = (await import(`../commands/${cmdName}`)) as { command: Command };
+            const { command: cmd } = (await import(`${filePath}/${cmdName}`)) as { command: Command };
 
             if (cmd.isDisabled || client.settings.commandsDisabled) {
                 logger.sysChat.error(`Found disabled command: ${cmd.name}`);

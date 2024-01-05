@@ -1,6 +1,7 @@
 import express from 'express';
 import { client } from './controllers/client.controller';
 import { logger } from './utils/Logger';
+import path from 'path';
 
 const app = express();
 
@@ -11,8 +12,8 @@ app.head('/', (req, res) => {
 });
 
 app.get('/download', (req, res, next) => {
-    const path = `${process.cwd()}/ijt-twitchbot.db`;
-    res.download(path, (err) => {
+    const filepath = path.resolve(__dirname, './ijt-twitchbot.db');
+    res.download(filepath, (err) => {
         if (err) res.status(404).json({ err });
     });
 });
