@@ -23,6 +23,24 @@ export const getAllRows = async (table: keyof typeof TableNames) => {
 };
 
 /**
+ * * --- Dungeons & Dragons --- *
+ */
+
+export const getDungeonParty = async ($channel: string) => {
+    const sql = `SELECT * from twitch_channel_dnd_parties WHERE channel = $channel`;
+    const db = await getDB();
+    const stmt = await db.prepare(sql);
+    return stmt.get({ $channel });
+};
+
+export const updateDungeonMembers = async ($channel: string, $members: string) => {
+    const sql = `INSERT OR REPLACE INTO twitch_channel_dnd_parties (members) VALUES ($members) WHERE channel = $channel`;
+    const db = await getDB();
+    const stmt = await db.prepare(sql);
+    return stmt.run({ $channel, $members });
+};
+
+/**
  * * --- Event Management --- *
  */
 export const addChannelEvent = async (channel: string, event: string) => {
