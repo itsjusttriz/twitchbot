@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "clear && tsc",
-    "start": "clear && tsc && node ."
+    "start": "clear && tsc && node .",
+    "cleanup": "rm -rf node_modules dist package-lock.json"
   },
   "author": "itsjusttriz",
   "license": "ISC",
