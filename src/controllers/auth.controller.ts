@@ -5,7 +5,7 @@ import path from 'path';
 import config from '../config.json';
 
 async function createAuthProvider() {
-    const tokenFilePath = path.resolve(__dirname, '../tokens.json');
+    const tokenFilePath = path.resolve(__dirname, '../../tokens.json');
     const tokenData = JSON.parse(await fsp.readFile(tokenFilePath, 'utf8'));
 
     const authProvider = new RefreshingAuthProvider({
