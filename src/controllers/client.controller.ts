@@ -25,7 +25,7 @@ export class ClientController {
 
     private constructor() {}
 
-    static get chat() {
+    static get chat(): Client {
         return this._chat;
     }
 
