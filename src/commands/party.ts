@@ -1,17 +1,14 @@
+import { dndDb } from '../controllers/DatabaseController/DndDatabaseController';
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { hasPermission } from '../utils/check-command-permissions';
-import { Permissions } from '../utils/constants';
+import { hasPermission } from '../helper/CommandPermissionCheck';
 import { Command } from '../utils/interfaces';
-import { getDungeonParty, updateDungeonMembers } from '../utils/sqlite';
 
 export const command = {
     name: 'party',
-    permission: Permissions.REGULAR,
+    permission: 'REGULAR',
     run: async (opts) => {
-        const _list = await getDungeonParty(opts.dehashedChannel).catch((error) => {
-            logger.db.error(error);
-            return;
-        });
+        const _list = await dndDb.getParty(opts.dehashedChannel).catch(_.quickCatch);
 
         const list = _list?.members?.split(',').filter((x) => !!x.length) || [];
 
@@ -27,29 +24,38 @@ export const command = {
             return;
         }
 
-        if (!hasPermission(opts.tags, 'MODERATOR')) return;
+        if (!hasPermission(opts.tags, 'mod')) return;
         const action = opts.args.shift();
         switch (action) {
+            case 'create':
+                try {
+                    await dndDb.createParty(opts.dehashedChannel);
+                    await opts.chatClient.say(opts.channel, 'Created party!');
+                } catch (error) {
+                    logger.db.error(error);
+                    await opts.chatClient.say(opts.channel, 'Failed to create a party.');
+                }
+                break;
             case '+':
             case 'add':
                 list.push(...opts.args);
                 try {
-                    await updateDungeonMembers(opts.dehashedChannel, [...new Set(list)].join(','));
+                    await dndDb.updatePartyMembers(opts.dehashedChannel, [...new Set(list)].join(','));
                     await opts.chatClient.say(opts.channel, 'Updated party!');
                 } catch (error) {
                     logger.db.error(error);
-                    await opts.chatClient.say(opts.channel, 'Failed to add to party. An error was recorded.');
+                    await opts.chatClient.say(opts.channel, 'Failed to add member(s) to party.');
                 }
                 break;
             case '-':
             case 'remove':
                 const removedResult = list.filter((c: string) => !opts.args.includes(c));
                 try {
-                    await updateDungeonMembers(opts.dehashedChannel, [...new Set(removedResult)].join(','));
+                    await dndDb.updatePartyMembers(opts.dehashedChannel, [...new Set(removedResult)].join(','));
                     await opts.chatClient.say(opts.channel, 'Updated party!');
                 } catch (error) {
                     logger.db.error(error);
-                    await opts.chatClient.say(opts.channel, 'Failed to remove from party. An error was recorded.');
+                    await opts.chatClient.say(opts.channel, 'Failed to remove member(s) from party.');
                 }
                 break;
             default: {

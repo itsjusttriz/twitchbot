@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { SubGiftUserstate, SubMethods } from 'tmi.js';
-import { ClientController } from '../controllers/client.controller';
+import { ClientController } from '../controllers/ClientController';
 import { logger } from '../utils/Logger';
 import { Event } from '../utils/interfaces/Event';
 

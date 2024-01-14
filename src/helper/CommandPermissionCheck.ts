@@ -1,5 +1,5 @@
 import { ChatUserstate } from 'tmi.js';
-import { Permissions } from './constants';
+import { Permissions } from '../utils/constants';
 
 export function isVip(tags: ChatUserstate) {
     return !!tags.badges?.vip;
@@ -34,6 +34,6 @@ export function getPermissions(tags: ChatUserstate) {
     };
 }
 
-export function hasPermission(tags: ChatUserstate, reqPerm: keyof typeof Permissions) {
+export function hasPermission(tags: ChatUserstate, reqPerm: (typeof Permissions)[keyof typeof Permissions]) {
     return getPermissions(tags)[reqPerm];
 }

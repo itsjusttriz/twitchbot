@@ -1,39 +1,33 @@
 import { EmbedBuilder } from 'discord.js';
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'reminder',
     aliases: [],
-    permission: Permissions.MODERATOR,
+    permission: 'MODERATOR',
     requiresInput: true,
     run: async (opts) => {
-        const channel = _.dehashChannel(opts.channel);
-        const hook = opts.client.discordWebhooks?.get(channel);
-        if (!hook) {
-            logger.sysDebug.error(`No webhook found for channel (${channel})`);
-            return;
-        }
-
-        const embed = new EmbedBuilder().setTitle(`@${opts.user}`).setDescription(`${opts.msgText} `);
-
-        let shouldSendResponse: boolean;
         try {
-            await hook.send({
-                username: `Twitch Reminder`,
-                embeds: [embed],
-            });
-            shouldSendResponse = true;
+            const channel = _.dehashChannel(opts.channel);
+            const hook = opts.client.discordWebhooks?.get(channel);
+            if (!hook) {
+                throw `No webhook found for channel (${channel})`;
+            }
+
+            const embed = new EmbedBuilder().setTitle(`@${opts.user}`).setDescription(`${opts.msgText} `);
+
+            const sent = await hook.send({ username: `Twitch Reminder`, embeds: [embed] }).catch(_.quickCatch);
+            if (!sent) {
+                throw 'Failed to send reminder.';
+            }
+
+            await opts.chatClient.say(opts.channel, 'Reminder sent.');
             logger.sysDebug.success(`Sent Reminder to DiscordWebhook with the following ID: (${hook.id})`);
         } catch (error) {
             logger.sysDebug.error(error);
-            shouldSendResponse = true;
+            await opts.chatClient.say(opts.channel, error);
         }
-
-        let resp = shouldSendResponse ? 'Reminder Sent!' : 'Something went wrong? An error was recorded.';
-        await opts.chatClient.say(opts.channel, resp);
-        return;
     },
 } as Command;

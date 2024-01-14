@@ -1,15 +1,16 @@
-import { Client } from '@twurple/auth-tmi';
 import { BasicObjectProps } from '@itsjusttriz/utils';
+import { Client } from '@twurple/auth-tmi';
 import fs from 'fs';
 import path from 'path';
 
-import { createAuthProvider } from './auth.controller';
-import { Event, Command } from '../utils/interfaces';
+import { Command, Event } from '../utils/interfaces';
+import { createAuthProvider } from './TwurpleAuthController';
 
-import config from '../config.json';
 import { WebhookClient } from 'discord.js';
-import { getValidDiscordWebhookURLs } from '../utils/sqlite';
+import config from '../config.json';
+import { _ } from '../utils';
 import { logger } from '../utils/Logger';
+import { discordHooksDb } from './DatabaseController/DiscordWebhookDatabaseController';
 
 export class ClientController {
     static settings: BasicObjectProps;
@@ -43,11 +44,11 @@ export class ClientController {
     }
 
     static async loadEvents() {
-        const filePath = path.resolve(__dirname, './events');
+        const filePath = path.resolve(__dirname, '../events');
         const events = fs.readdirSync(filePath).filter((f) => f.endsWith('.js'));
 
         for (const event of events) {
-            const { event: e } = (await import(`${filePath}/${event}`)) as { event: Event };
+            const { event: e } = (await import(`file://${filePath}/${event}`)) as { event: Event };
 
             if (e.isDisabled || client.settings.eventsDisabled) {
                 logger.sysEvent.error(`Found disabled event: ${e.name}`);
@@ -60,11 +61,11 @@ export class ClientController {
     }
 
     static async loadCommands() {
-        const filePath = path.resolve(__dirname, './commands');
+        const filePath = path.resolve(__dirname, '../commands');
         const commands = fs.readdirSync(filePath).filter((f) => f.endsWith('.js'));
 
         for (const cmdName of commands) {
-            const { command: cmd } = (await import(`${filePath}/${cmdName}`)) as { command: Command };
+            const { command: cmd } = (await import(`file://${filePath}/${cmdName}`)) as { command: Command };
 
             if (cmd.isDisabled || client.settings.commandsDisabled) {
                 logger.sysChat.error(`Found disabled command: ${cmd.name}`);
@@ -78,25 +79,30 @@ export class ClientController {
     }
 
     static async loadDiscordWebhooks() {
-        this.discordWebhooks.clear();
+        try {
+            this.discordWebhooks.clear();
 
-        const channels = await getValidDiscordWebhookURLs();
-        if (!channels) {
-            throw new Error('Could not run getValidDiscordWebhookURLs()');
-        }
+            const channels = await discordHooksDb.getAllWebhooks().catch(_.quickCatch);
+            if (!channels) {
+                throw 'Failed to get discord webhooks from database.';
+            }
 
-        for (const { channel, url } of Object.values(channels)) {
-            const hook = new WebhookClient({ url });
-            hook.rest.on('rateLimited', async (info) => {
-                const timeLeft = info.timeToReset / 1000;
-                await this.chat.say(
-                    this.settings.debug.logChannel,
-                    `@itsjusttriz -> DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
-                );
-            });
-            this.discordWebhooks.set(channel, hook);
+            for (const { channel, url } of Object.values(channels)) {
+                const hook = new WebhookClient({ url });
+                hook.rest.on('rateLimited', async (info) => {
+                    const timeLeft = info.timeToReset / 1000;
+                    await this.chat.say(
+                        this.settings.debug.logChannel,
+                        `@itsjusttriz -> DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
+                    );
+                });
+                this.discordWebhooks.set(channel, hook);
+            }
+            return true;
+        } catch (error) {
+            logger.sysDebug.error(error);
+            return false;
         }
-        return;
     }
 }
 

@@ -1,12 +1,11 @@
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'toggle',
     aliases: ['config'],
-    permission: Permissions.OWNER,
+    permission: 'OWNER',
     requiresInput: true,
     maxArgs: 2,
     maxArgsErrorMessage: 'Invalid arguments. Usage: !toggle <option> <true/false>',

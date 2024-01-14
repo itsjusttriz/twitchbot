@@ -1,5 +1,4 @@
 import { ITime } from '@itsjusttriz/utils';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 /**
@@ -8,7 +7,7 @@ import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'drops',
-    permission: Permissions.REGULAR,
+    permission: 'REGULAR',
 
     whitelisted_channels: ['stackupdotorg'],
     whitelisted_users: ['finncapp', 'itsjusttriz'],

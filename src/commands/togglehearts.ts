@@ -1,37 +1,37 @@
+import { heartsDb } from '../controllers/DatabaseController/HeartEmotesDatabaseController';
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
-import { toggleHeartEmotesByChannel } from '../utils/sqlite';
 
 export const command = {
     name: 'togglehearts',
     aliases: [],
-    permission: Permissions.OWNER,
+    permission: 'OWNER',
     requiresInput: true,
     minArgs: 2,
     min_args_error_message: 'Usage: !togglehearts <channel> <true/false>',
     blacklisted_channels: ['stackupdotorg'],
     run: async (opts) => {
-        const [_channel, ...extraText] = opts.args;
-        const channel = _.dehashChannel(_channel);
-
-        let hasFoundHearts: boolean;
         try {
-            const stmt = await toggleHeartEmotesByChannel(channel, extraText[0] === 'true').catch(async (e) => ({
-                changes: 0,
-            }));
-            hasFoundHearts = !!stmt.changes;
+            const [_channel, ...extraText] = opts.args;
+
+            const query = await heartsDb
+                .toggleChannelEmotes(_.dehashChannel(_channel), extraText[0] === 'true')
+                .catch(_.quickCatch);
+            if (!query) {
+                throw 'Failed to toggle heart emotes.';
+            }
+            if (!query.changes) {
+                throw 'Nothing changed.';
+            }
+
+            await opts.chatClient.say(
+                opts.channel,
+                `Toggled all hearts from channel (${_channel}) to ${extraText[0]}.`
+            );
         } catch (error) {
             logger.sysDebug.error(error);
-            hasFoundHearts = false;
+            await opts.chatClient.say(opts.channel, error);
         }
-
-        let resp = hasFoundHearts
-            ? `Toggled all hearts from channel (${channel}) to ${extraText[0]}.`
-            : `Failed to find heart emotes for channel (${channel}).`;
-
-        await opts.chatClient.say(opts.channel, resp);
-        return;
     },
 } as Command;

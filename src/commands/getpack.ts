@@ -1,16 +1,15 @@
 import { Command } from '../utils/interfaces';
-import { Permissions } from '../utils/constants';
-import { ijtApi } from '../services/ijt.api.service';
+import { ijtapiService } from '../services/IjtApiService';
 
 export const command = {
     name: 'getpack',
-    permission: Permissions.MODERATOR,
+    permission: 'MODERATOR',
     requiresInput: true,
     maxArgs: 1,
     maxArgsErrorMessage: 'Too many arguments. Try again!',
     blacklisted_channels: ['stackupdotorg'],
     run: async (opts) => {
-        const api = await ijtApi.getModpack(opts.args[0]);
+        const api = await ijtapiService.getModpack(opts.args[0]);
         if (!api) {
             await opts.chatClient.say(opts.channel, `Failed to fetch this modpack.`);
             return;

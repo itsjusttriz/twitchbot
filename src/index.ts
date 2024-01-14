@@ -1,5 +1,5 @@
 import express from 'express';
-import { client } from './controllers/client.controller';
+import { client } from './controllers/ClientController';
 import { logger } from './utils/Logger';
 import path from 'path';
 
@@ -27,11 +27,4 @@ app.listen(8082, async () => {
     await client.loadDiscordWebhooks();
     await client.loadEvents();
     await client.loadCommands();
-
-    setTimeout(() => internalUptimeCheck(chat), 1000);
 });
-
-function internalUptimeCheck(c: typeof client.chat) {
-    c.say(client.settings.debug.logChannel, 'Uptime Check.');
-    setTimeout(() => internalUptimeCheck(c), 1000 * 60 * 3);
-}

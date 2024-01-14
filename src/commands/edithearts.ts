@@ -1,15 +1,14 @@
+import { heartsDb } from '../controllers/DatabaseController/HeartEmotesDatabaseController';
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
-import { addHeartEmote, removeHeartEmote } from '../utils/sqlite';
 
 export const command = {
     name: 'edithearts',
     aliases: [],
     minArgs: 3,
     min_args_error_message: 'Usage: !edithearts <option> <channel> <....hearts>',
-    permission: Permissions.OWNER,
+    permission: 'OWNER',
     blacklisted_channels: ['stackupdotorg'],
     run: async (opts) => {
         const [option, _channel, ...extraText] = opts.args;
@@ -31,7 +30,7 @@ export const command = {
             case 'add':
                 for (const heart of extraText) {
                     try {
-                        const stmt = await addHeartEmote(channel, heart).catch((e) => ({ changes: 0 }));
+                        const stmt = await heartsDb.addEmote(channel, heart).catch((e) => ({ changes: 0 }));
                         !stmt.changes ? failed.add(heart) : succeeded.add(heart);
                     } catch (error) {
                         logger.sysDebug.error(error);
@@ -44,7 +43,7 @@ export const command = {
             case 'remove':
                 for (const heart of extraText) {
                     try {
-                        const stmt = await removeHeartEmote(heart).catch((e) => ({ changes: 0 }));
+                        const stmt = await heartsDb.removeEmote(heart).catch((e) => ({ changes: 0 }));
                         !stmt.changes ? failed.add(heart) : succeeded.add(heart);
                     } catch (error) {
                         logger.sysDebug.error(error);

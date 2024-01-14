@@ -1,4 +1,4 @@
-import { updateStoredChannels } from '../helper/update-stored-channels';
+import { updateStoredChannels } from '../helper/UpdateStoredChannelsHelper';
 import { _ } from '../utils';
 import { Event } from '../utils/interfaces/Event';
 import { logger } from '../utils/Logger';
@@ -16,7 +16,7 @@ export const event = {
 
         if (!client.settings.debug.enabled) {
             try {
-                await updateStoredChannels(_.dehashChannel(channel), 'REMOVE');
+                await updateStoredChannels(_.dehashChannel(channel), 'remove');
             } catch (error) {
                 logger.sysEvent.error(`Failed to run updateStoredChannels() of type "REMOVE": ${error}`);
             }

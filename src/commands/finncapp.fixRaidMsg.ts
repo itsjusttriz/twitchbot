@@ -1,6 +1,5 @@
-import { ijtApi } from '../services/ijt.api.service';
+import { ijtapiService } from '../services/IjtApiService';
 import { logger } from '../utils/Logger';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 /**
@@ -10,14 +9,14 @@ import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'fixraidmsg',
-    permission: Permissions.REGULAR,
+    permission: 'REGULAR',
     requiresInput: false,
 
     whitelisted_channels: ['finncapp', 'itsjusttriz'],
     whitelisted_users: ['finncapp', 'itsjusttriz'],
 
     run: async (opts) => {
-        const isTrue: Boolean = await ijtApi.checkNightbotStatus();
+        const isTrue: Boolean = await ijtapiService.checkNightbotStatus();
         if (!isTrue) {
             logger.svcIjtApi.error('Nightbot Multiline script not available.');
         }

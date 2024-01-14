@@ -1,10 +1,11 @@
 import { ChatUserstate } from 'tmi.js';
-import { hasPermission } from '../utils/check-command-permissions.js';
+import { hasPermission } from '../helper/CommandPermissionCheck.js';
 import { MessageOptions } from '../utils/MessageOptions.js';
 import { Event } from '../utils/interfaces/Event.js';
-import { handleBadJokes } from '../helper/event.message/handlers.badjoke.js';
-import { handleMessageLogging } from '../helper/event.message/handlers.logging.js';
+import { handleBadJokes } from '../helper/event.message/custom.BadJokeHelper.js';
+import { handleMessageLogging } from '../helper/event.message/LoggerHelper.js';
 import { logger } from '../utils/Logger.js';
+import { Permissions } from '../utils/constants';
 
 const badJokeChannels = new Map<string, boolean>();
 
@@ -18,7 +19,7 @@ export const event = {
 
         // ? Improve this.
         const msgLog = await handleMessageLogging(opts);
-        logger[client.settings.debug.enabled ? 'sysDebug' : 'sysChat'].log(undefined, msgLog);
+        logger.sysChat.log(undefined, msgLog);
 
         await handleBadJokes(opts, badJokeChannels);
 
@@ -30,7 +31,7 @@ export const event = {
         const isValidCommandName = cmd.name === opts.command || cmd.aliases?.includes(opts.command);
         if (!isValidCommandName) return;
 
-        if (!hasPermission(tags, cmd.permission)) return;
+        if (!hasPermission(tags, Permissions[cmd.permission])) return;
         if (cmd.blacklisted_channels?.length && cmd.blacklisted_channels?.includes(opts.dehashedChannel)) return;
         if (
             cmd.whitelisted_channels?.length &&

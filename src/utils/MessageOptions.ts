@@ -1,5 +1,5 @@
 import { ChatUserstate } from 'tmi.js';
-import { ClientController } from '../controllers/client.controller.js';
+import { ClientController } from '../controllers/ClientController.js';
 import { _ } from './index.js';
 
 export class MessageOptions {
@@ -28,8 +28,6 @@ export class MessageOptions {
         this.msgText = this.args.join(' ');
         this.user = this.tags.username;
     }
-
-    // TODO: Create mention clause, channel-based config dependant.
 
     get chatClient() {
         return this.client.chat;

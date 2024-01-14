@@ -1,13 +1,12 @@
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { isOwner } from '../utils/check-command-permissions';
-import { Permissions } from '../utils/constants';
+import { isOwner } from '../helper/CommandPermissionCheck';
 import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'leave',
     aliases: ['part'],
-    permission: Permissions.CASTER,
+    permission: 'CASTER',
     requiresInput: true,
 
     run: async (opts) => {

@@ -31,16 +31,4 @@ export const _ = {
             )
         );
     },
-    async noEventFallback(eventType: string, hook: any, channel: string) {
-        if (!hook) throw 'Webhook (ijtdev) does not exist.';
-
-        try {
-            await hook.send({
-                username: `Twitch ${eventType} Event - ${channel}`,
-                content: `No event (${eventType.toLowerCase()}) config found for channel (${channel})`,
-            });
-        } catch (error) {
-            throw 'DiscordWebhook failed to send message.';
-        }
-    },
 };

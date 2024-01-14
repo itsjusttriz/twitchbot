@@ -1,5 +1,5 @@
 import { Events } from 'tmi.js';
-import { ClientController } from '../../controllers/client.controller';
+import { ClientController } from '../../controllers/ClientController';
 
 export interface Event {
     name: keyof Events;

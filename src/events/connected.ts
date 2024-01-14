@@ -1,4 +1,4 @@
-import { joinChannelsOnStartup } from '../helper/join-channels-on-startup';
+import { joinChannelsOnStartup } from '../helper/JoinChannelOnStartupHelper';
 import { Event } from '../utils/interfaces/Event';
 import { logger } from '../utils/Logger';
 

@@ -12,25 +12,32 @@ type LoggerProps = {
 
 const logger: LoggerProps = {
     sysChat: new Logger({
-        customPrefix: '[System/CHAT]',
+        includeTimestamp: false,
+        customPrefix: '[CHAT]',
     }),
     sysEvent: new Logger({
-        customPrefix: '[System/EVENT]',
+        includeTimestamp: false,
+        customPrefix: '[EVENT]',
     }),
     sysDebug: new Logger({
-        customPrefix: `${ANSIColors.DEBUG}[System/DEBUG]${ANSIColors.RESET}`,
+        includeTimestamp: false,
+        customPrefix: `${ANSIColors.DEBUG}[DEBUG]${ANSIColors.RESET}`,
     }),
     db: new Logger({
-        customPrefix: '[System/DATABASE]',
+        includeTimestamp: false,
+        customPrefix: '[DATABASE]',
     }),
     svcDecApi: new Logger({
-        customPrefix: '[Services/DECAPI]',
+        includeTimestamp: false,
+        customPrefix: '[DECAPI]',
     }),
     svcIjtApi: new Logger({
-        customPrefix: '[Services/IJTAPI]',
+        includeTimestamp: false,
+        customPrefix: '[IJTAPI]',
     }),
     svcBackend: new Logger({
-        customPrefix: '[Services/BACKEND]',
+        includeTimestamp: false,
+        customPrefix: '[BACKEND]',
     }),
 };
 

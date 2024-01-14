@@ -1,9 +1,8 @@
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'epoch',
-    permission: Permissions.REGULAR,
+    permission: 'REGULAR',
     requiresInput: true,
     minArgs: 1,
     min_args_error_message: 'Please provide a timestamp, like so: 2023-01-01T09:00',

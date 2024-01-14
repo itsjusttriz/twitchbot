@@ -1,6 +1,6 @@
 import { ChatUserstate } from 'tmi.js';
 import { MessageOptions } from '../../utils/MessageOptions';
-import { isCasterOrAbove, isModOrAbove, isOwner, isSubOrAbove, isVip } from '../../utils/check-command-permissions';
+import { isCasterOrAbove, isModOrAbove, isOwner, isSubOrAbove, isVip } from '../CommandPermissionCheck';
 import { ANSIColors } from '../../utils/Logger';
 
 export const parseUserType = async (tags: ChatUserstate) => {

@@ -1,11 +1,10 @@
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 import { IArray } from '@itsjusttriz/utils';
 
 export const command = {
     name: 'fightme',
     aliases: [],
-    permission: Permissions.REGULAR,
+    permission: 'REGULAR',
     whitelisted_channels: ['ijtdev', 'jester1147'],
     run: async (opts) => {
         const replies = new IArray([

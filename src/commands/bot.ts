@@ -1,11 +1,10 @@
 import { ITime } from '@itsjusttriz/utils';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'bot',
     aliases: ['process'],
-    permission: Permissions.OWNER,
+    permission: 'OWNER',
     isUnmutable: true,
     run: async (opts) => {
         const subcmd = opts.args[0];

@@ -1,11 +1,10 @@
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
-import { Permissions } from '../utils/constants';
 import { Command } from '../utils/interfaces';
 
 export const command = {
     name: 'join',
-    permission: Permissions.OWNER,
+    permission: 'OWNER',
     requiresInput: true,
     blacklisted_channels: ['stackupdotorg'],
 
