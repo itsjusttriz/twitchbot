@@ -17,7 +17,9 @@ export const event = {
             }
 
             if (!!storedRaid.outcome) {
-                for (const line of storedRaid.outcome.split('\\n')) {
+                const lines = await _.parseCustomVarsInMessage(storedRaid.outcome, { channel, username, viewers });
+
+                for (const line of lines.split('\\n')) {
                     if (!!storedRaid.disabled) break;
                     if (client.settings.isMuted) break;
                     if (viewers < storedRaid.condition) break;
