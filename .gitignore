@@ -1,7 +1,7 @@
 node_modules
 dist
 
-src/config.json
+config.json
 tokens.json
 package-lock.json
 
