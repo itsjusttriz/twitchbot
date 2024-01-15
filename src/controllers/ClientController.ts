@@ -7,7 +7,7 @@ import { Command, Event } from '../utils/interfaces';
 import { createAuthProvider } from './TwurpleAuthController';
 
 import { WebhookClient } from 'discord.js';
-import config from '../config.json';
+import config from '../../config.json';
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { discordHooksDb } from './DatabaseController/DiscordWebhookDatabaseController';

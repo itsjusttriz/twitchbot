@@ -2,7 +2,7 @@ import { RefreshingAuthProvider } from '@twurple/auth';
 import fsp from 'fs/promises';
 import path from 'path';
 
-import config from '../config.json';
+import config from '../../config.json';
 
 async function createAuthProvider() {
     const tokenFilePath = path.resolve(__dirname, '../../tokens.json');
