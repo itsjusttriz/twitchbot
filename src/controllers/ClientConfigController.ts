@@ -1,5 +1,6 @@
+import path from 'path';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 class ClientConfigController {
     TWITCH_CLIENT_ID: string;
