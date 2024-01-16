@@ -21,19 +21,17 @@ export const command = {
                 break;
             }
             case 'mute': {
-                const hasProperty = opts.client.settings.hasOwnProperty('isMuted');
-                const prev = hasProperty ? opts.client.settings['isMuted'] : false;
+                const prev = opts.client.config.IS_MUTED ?? false;
 
-                if (!hasProperty) {
-                    await opts.chatClient.say(
-                        opts.channel,
-                        "Cannot configure this property. Please update the system's config file."
-                    );
-                    return;
-                }
+                opts.client.config.IS_MUTED = !prev;
+                await opts.chatClient.say(opts.channel, `${opts.user} -> Toggled 'IS_MUTED' setting to ${!prev}`);
+                break;
+            }
+            case 'debug': {
+                const prev = opts.client.config.DEBUG_MODE;
 
-                opts.client.settings.isMuted = !prev;
-                await opts.chatClient.say(opts.channel, `${opts.user} -> Toggled 'isMuted' setting to ${!prev}`);
+                opts.client.config.DEBUG_MODE = !prev;
+                await opts.chatClient.say(opts.channel, `${opts.user} -> Toggled 'DEBUG_MODE' setting to ${!prev}`);
                 break;
             }
             default: {

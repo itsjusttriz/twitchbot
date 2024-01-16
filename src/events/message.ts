@@ -23,7 +23,7 @@ export const event = {
 
         await handleBadJokes(opts, badJokeChannels);
 
-        if (self || !msg.startsWith(client.settings.prefix)) return;
+        if (self || !msg.startsWith(client.config.COMMAND_PREFIX)) return;
 
         const cmd = client.commands.get(opts.command);
         if (!cmd) return;
@@ -36,7 +36,7 @@ export const event = {
         if (
             cmd.whitelisted_channels?.length &&
             !cmd.whitelisted_channels?.includes(opts.dehashedChannel) &&
-            opts.dehashedChannel !== client.settings.debug.logChannel
+            opts.dehashedChannel !== client.config.DEBUG_CHANNEL
         )
             return;
         if (cmd.whitelisted_users && !cmd.whitelisted_users.includes(opts.user)) return;
@@ -62,7 +62,7 @@ export const event = {
             return;
         }
 
-        if (client.settings.isMuted && !cmd.isUnmutable) return;
+        if (client.config.IS_MUTED && !cmd.isUnmutable) return;
         cmd.run(opts);
     },
 } as Event;

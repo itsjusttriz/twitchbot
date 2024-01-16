@@ -26,7 +26,7 @@ export const event = {
             if (!!storedReward.outcome) {
                 for (const line of storedReward.outcome.split('\\n')) {
                     if (!!storedReward.disabled) break;
-                    if (client.settings.isMuted) break;
+                    if (client.config.IS_MUTED) break;
                     await client.chat.say(storedReward.channel, line).catch((e) => {
                         logger.sysEvent.error(`Failed to send message in channel (${storedReward.channel}): "${line}"`);
                     });

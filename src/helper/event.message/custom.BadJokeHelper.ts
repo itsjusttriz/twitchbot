@@ -41,7 +41,7 @@ export const handleBadJokes = async (opts: MessageOptions, map: Map<string, bool
     const isHandled = map.has(opts.tags['room-id']);
     if (is47y) {
         if (!isHandled) {
-            if (opts.client.settings.debug.isToggled) logger.error('Channel ID not stored. Escaping...');
+            if (opts.client.config.DEBUG_MODE) logger.error('Channel ID not stored. Escaping...');
             return;
         }
 

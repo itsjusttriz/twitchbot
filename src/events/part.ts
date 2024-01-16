@@ -10,15 +10,15 @@ export const event = {
     run: async (client, channel: string, username: string, self: boolean) => {
         if (!self) return;
 
-        if (client.settings.debug.enabled) client.chat.say(client.settings.debug.logChannel, `Left ${channel}`);
+        if (client.config.DEBUG_MODE) client.chat.say(client.config.DEBUG_CHANNEL, `Left ${channel}`);
 
         logger.sysEvent.info(`Left ${channel}`);
 
-        if (!client.settings.debug.enabled) {
+        if (!client.config.DEBUG_MODE) {
             try {
                 await updateStoredChannels(_.dehashChannel(channel), 'remove');
             } catch (error) {
-                logger.sysEvent.error(`Failed to run updateStoredChannels() of type "REMOVE": ${error}`);
+                logger.sysEvent.error(`Failed to update stored channels in 'PART' event: ${error}`);
             }
         }
         return;

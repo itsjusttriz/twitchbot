@@ -21,7 +21,7 @@ export const event = {
 
                 for (const line of lines.split('\\n')) {
                     if (!!storedRaid.disabled) break;
-                    if (client.settings.isMuted) break;
+                    if (client.config.IS_MUTED) break;
                     if (viewers < storedRaid.condition) break;
                     await client.chat.say(storedRaid.channel, line).catch((e) => {
                         logger.sysEvent.error(`Failed to send message in channel (${storedRaid.channel}): "${line}"`);

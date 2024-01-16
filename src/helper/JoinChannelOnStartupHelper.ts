@@ -3,14 +3,12 @@ import { channelsDb } from '../controllers/DatabaseController/ChannelConnectionD
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 
-const DEFAULT_CHANNELS = ['itsjusttriz', 'ijtdev'];
-
 export async function joinChannelsOnStartup(client: typeof ClientController) {
     let storedChannels = await channelsDb.getJoinableChannels().catch(_.quickCatch);
 
     const channels =
         !storedChannels || !storedChannels.length
-            ? DEFAULT_CHANNELS
+            ? client.config.DEFAULT_CHANNELS
             : storedChannels.map(({ name: channel }: { name: string }) => channel);
 
     const mappedToJoin = channels.map((c) => client.chat.join(c));
@@ -23,7 +21,7 @@ export async function joinChannelsOnStartup(client: typeof ClientController) {
         .map((c) => _.dehashChannel(c));
     const rejectedChans = channels.filter((c) => !fulfilled.includes(c));
 
-    if (client.settings.debug.enabled) {
+    if (client.config.DEBUG_MODE) {
         logger.sysChat.error('Failed - JOIN - Channels: ' + JSON.stringify(rejectedChans, null, 4));
         logger.sysChat.success('Success - JOIN - Channels: ' + JSON.stringify(fulfilled, null, 4));
     }

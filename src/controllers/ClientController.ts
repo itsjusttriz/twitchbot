@@ -1,28 +1,24 @@
-import { BasicObjectProps } from '@itsjusttriz/utils';
 import { Client } from '@twurple/auth-tmi';
+import { WebhookClient } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
 
-import { Command, Event } from '../utils/interfaces';
+import { config } from './ClientConfigController';
 import { createAuthProvider } from './TwurpleAuthController';
-
-import { WebhookClient } from 'discord.js';
-import config from '../../config.json';
-import { _ } from '../utils';
-import { logger } from '../utils/Logger';
 import { discordHooksDb } from './DatabaseController/DiscordWebhookDatabaseController';
 
+import { _ } from '../utils/index';
+import { Command, Event } from '../utils/interfaces';
+import { logger } from '../utils/Logger';
+
 export class ClientController {
-    static settings: BasicObjectProps;
+    static config: typeof config = config;
     static commands: Map<string, Command>;
     static discordWebhooks: Map<string, WebhookClient>;
     private static _chat: Client;
     static {
         this.commands = new Map();
         this.discordWebhooks = new Map();
-
-        if (config) this.settings = { ...config.settings };
-        else this.settings = null;
     }
 
     private constructor() {}
@@ -50,7 +46,7 @@ export class ClientController {
         for (const event of events) {
             const { event: e } = (await import(`file://${filePath}/${event}`)) as { event: Event };
 
-            if (e.isDisabled || client.settings.eventsDisabled) {
+            if (e.isDisabled) {
                 logger.sysEvent.error(`Found disabled event: ${e.name}`);
                 continue;
             }
@@ -67,7 +63,7 @@ export class ClientController {
         for (const cmdName of commands) {
             const { command: cmd } = (await import(`file://${filePath}/${cmdName}`)) as { command: Command };
 
-            if (cmd.isDisabled || client.settings.commandsDisabled) {
+            if (cmd.isDisabled) {
                 logger.sysChat.error(`Found disabled command: ${cmd.name}`);
                 continue;
             }
@@ -92,8 +88,8 @@ export class ClientController {
                 hook.rest.on('rateLimited', async (info) => {
                     const timeLeft = info.timeToReset / 1000;
                     await this.chat.say(
-                        this.settings.debug.logChannel,
-                        `@itsjusttriz -> DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
+                        this.config.DEBUG_CHANNEL,
+                        `@${this.config.DEBUG_CHANNEL} -> DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
                     );
                 });
                 this.discordWebhooks.set(channel, hook);

@@ -10,14 +10,16 @@ export const event = {
     run: async (client, channel: string, username: string, self: boolean) => {
         if (!self) return;
 
-        if (client.settings.debug.enabled) client.chat.say(client.settings.debug.logChannel, `Joined ${channel}`);
+        if (client.config.DEBUG_MODE) {
+            client.chat.say(client.config.DEBUG_CHANNEL, `Joined ${channel}`);
+        }
         logger.sysEvent.info(`Joined ${channel}`);
 
-        if (!client.settings.debug.enabled) {
+        if (!client.config.DEBUG_MODE) {
             try {
                 await updateStoredChannels(_.dehashChannel(channel), 'add');
             } catch (error) {
-                logger.sysEvent.error(`Failed to run updateStoredChannels() of type "ADD": ${error}`);
+                logger.sysEvent.error(`Failed to update stored channels in 'JOIN' event: ${error}`);
             }
         }
         return;
