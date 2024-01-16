@@ -1,15 +1,9 @@
+import path from 'path';
 import express from 'express';
 import { client } from './controllers/ClientController';
 import { logger } from './utils/Logger';
-import path from 'path';
 
 const app = express();
-
-app.head('/', (req, res) => {
-    if (client.settings.debug.enabled) logger.svcBackend.success('Backend called upon!');
-    res.status(200).end();
-    return;
-});
 
 app.get('/download', (req, res, next) => {
     const filepath = path.resolve(__dirname, './ijt-twitchbot.db');
