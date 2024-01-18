@@ -14,13 +14,12 @@ export const command = {
         try {
             const result = await decapiService.calculate(opts.args[0]);
             if (!result) {
-                logger.svcDecApi.error('Something went wrong?');
-                await opts.chatClient.say(opts.channel, 'Something went wrong?');
+                throw `Something went wrong?`;
             }
             await opts.chatClient.say(opts.channel, result.toString());
         } catch (error) {
-            logger.svcDecApi.error('Something went wrong?', error);
-            await opts.chatClient.say(opts.channel, 'Something went wrong? An error has been recorded.');
+            logger.svcDecApi.error(error);
+            await opts.chatClient.say(opts.channel, error);
         }
         return;
     },
