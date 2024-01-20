@@ -26,7 +26,7 @@ export const command = {
     min_args_error_message: 'Usage: !raidevent <channel> <field> <...value>',
     run: async (opts) => {
         try {
-            const [_channel, field, ...extraText] = opts.args as [string, string, ...string[]];
+            const [channel, field, ...extraText] = opts.args as [string, string, ...string[]];
 
             const editableFields = ['condition', 'disabled', 'loggable', 'outcome'];
             if (!editableFields.includes(field.toLowerCase())) {
@@ -44,7 +44,7 @@ export const command = {
                     }
 
                     const query = await raidEventDb
-                        .toggleRaidOutcome(opts.dehashedChannel, extraText[0] === 'true')
+                        .toggleRaidOutcome(_.dehashChannel(channel), extraText[0] === 'true')
                         .catch(_.quickCatch);
                     if (!query || !query.changes) {
                         throw 'Failed to toggle this raid event outcome.';
@@ -57,7 +57,7 @@ export const command = {
                     }
 
                     const query = await raidEventDb
-                        .updateOutcomeCondition(opts.dehashedChannel, +extraText[0])
+                        .updateOutcomeCondition(_.dehashChannel(channel), +extraText[0])
                         .catch(_.quickCatch);
                     if (!query || !query.changes) {
                         throw 'Failed to update the condition for this raid event outcome.';
@@ -70,7 +70,7 @@ export const command = {
                     }
 
                     const query = await raidEventDb
-                        .toggleLogging(opts.dehashedChannel, extraText[0] === 'false')
+                        .toggleLogging(_.dehashChannel(channel), extraText[0] === 'false')
                         .catch(_.quickCatch);
                     if (!query || !query.changes) {
                         throw 'Failed to toggle logging for this raid event.';
@@ -79,7 +79,7 @@ export const command = {
                 }
                 case 'outcome': {
                     const query = await raidEventDb
-                        .updateOutcomeMessage(opts.dehashedChannel, extraText.join(' '))
+                        .updateOutcomeMessage(_.dehashChannel(channel), extraText.join(' '))
                         .catch(_.quickCatch);
                     if (!query || !query.changes) {
                         throw 'Failed to set an outcome for this raid event.';
