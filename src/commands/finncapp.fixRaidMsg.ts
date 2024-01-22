@@ -4,7 +4,7 @@ import { Command } from '../utils/interfaces';
 
 /**
  *
- * This command is stritcly used for the StackUpDotOrg channel for when Finncapp is live on the ChromaCage MC server.
+ * This command is strictly used for the StackUpDotOrg channel for when Finncapp is live on the ChromaCage MC server.
  */
 
 export const command = {
