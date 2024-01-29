@@ -1,4 +1,4 @@
-export const TableNames = {
+export const SQLTableNames = {
     CONNECTED_CHANNELS: 'connected_channels',
     DISCORD_WEBHOOK_URLS: 'discord_webhook_urls',
     TWITCH_HEART_EMOTES: 'twitch_heart_emotes',

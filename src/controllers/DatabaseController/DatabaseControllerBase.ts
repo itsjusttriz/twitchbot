@@ -1,7 +1,8 @@
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import path from 'path';
-import { TableNames } from '../../utils/constants';
+
+import { SQLTableNames } from '../../utils/constants';
 
 let _cachedDatabase: Promise<Database<sqlite3.Database, sqlite3.Statement>>;
 export const getDB = async () => {
@@ -12,12 +13,11 @@ export const getDB = async () => {
     }));
 };
 
-type TableNameKeys = keyof typeof TableNames;
-type TableNameValues = (typeof TableNames)[TableNameKeys];
+type SQLTableNameValues = (typeof SQLTableNames)[keyof typeof SQLTableNames];
 
 export class DatabaseControllerBase {
-    protected tableName: TableNameValues = undefined;
-    constructor(tableName: TableNameValues) {
+    protected tableName: SQLTableNameValues = undefined;
+    constructor(tableName: SQLTableNameValues) {
         this.tableName = tableName;
     }
 
