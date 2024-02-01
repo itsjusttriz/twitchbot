@@ -5,6 +5,8 @@ import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Command } from '../utils/interfaces';
 
+// Intended for use in #jayrockbird but CAN open to other channel's as sql table is prepared.
+
 const USAGE = `Usage: !mypal OR !mypal set {palName}`;
 
 export const command = {
