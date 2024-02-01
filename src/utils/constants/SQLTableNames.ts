@@ -5,4 +5,5 @@ export const SQLTableNames = {
     TWITCH_CHANNEL_RAID_OUTCOMES: 'twitch_channel_raid_outcomes',
     TWITCH_CHANNEL_DND_PARTIES: 'twitch_channel_dnd_parties',
     TWITCH_CHANNEL_POINT_REDEMPTIONS: 'twitch_cp_redemptions',
+    PALWORLD_PAL_NAMES: 'palworld_pal_names',
 } as const;
