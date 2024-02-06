@@ -15,7 +15,7 @@ export const command = {
     permission: 'REGULAR',
     maxArgs: 2,
     maxArgsErrorMessage: USAGE,
-    whitelisted_channels: ['jayrockbird'],
+    whitelisted_channels: ['jayrockbird', 'reninsane'],
     run: async (opts) => {
         try {
             const [action, input] = opts.args;
