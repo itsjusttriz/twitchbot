@@ -18,6 +18,8 @@ app.listen(8082, async () => {
     const chat = await client.createChatClient();
     chat.connect();
 
+    await client.createApiClient();
+
     await client.loadDiscordWebhooks();
     await client.loadEvents();
     await client.loadCommands();

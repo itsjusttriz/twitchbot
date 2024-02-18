@@ -6,6 +6,7 @@ export type RaidEventType = {
     disabled: 0 | 1;
     loggable: 0 | 1;
     outcome: string;
+    shoutout: 0 | 1;
 };
 
 class ChannelRaidDatabaseController extends DatabaseControllerBase {
