@@ -5,6 +5,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 class ClientConfigController {
     TWITCH_CLIENT_ID: string;
     TWITCH_CLIENT_SECRET: string;
+    TWITCH_USERNAME: string;
 
     COMMAND_PREFIX: string;
 
@@ -18,13 +19,14 @@ class ClientConfigController {
     constructor() {
         this.TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID ?? '';
         this.TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET ?? '';
+        this.TWITCH_USERNAME = process.env.TWITCH_USERNAME ?? '';
 
         this.COMMAND_PREFIX = process.env.COMMAND_PREFIX ?? '';
 
         if (process.env.DEBUG_MODE && !['true', 'false'].includes(process.env.DEBUG_MODE)) {
             throw new Error("Invalid Environment value for DEBUG_MODE. Must be 'true' or 'false'.");
         }
-        this.DEBUG_MODE = process.env.DEBUG_MODE === 'true' ?? false;
+        this.DEBUG_MODE = process.env.DEBUG_MODE?.toUpperCase() === 'TRUE' ?? false;
         this.DEBUG_CHANNEL = process.env.DEBUG_CHANNEL ?? '';
 
         this.DEFAULT_CHANNELS = process.env.DEFAULT_CHANNELS?.split(',') ?? [];

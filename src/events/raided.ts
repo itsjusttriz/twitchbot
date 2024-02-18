@@ -17,7 +17,11 @@ export const event = {
             }
 
             if (!!storedRaid.outcome) {
-                const lines = await _.parseCustomVarsInMessage(storedRaid.outcome, { channel, username, viewers });
+                const lines = await _.parseCustomVarsInMessage(storedRaid.outcome, {
+                    channel,
+                    username,
+                    viewers,
+                });
 
                 for (const line of lines.split('\\n')) {
                     if (!!storedRaid.disabled) break;
@@ -27,6 +31,12 @@ export const event = {
                         logger.sysEvent.error(`Failed to send message in channel (${storedRaid.channel}): "${line}"`);
                     });
                 }
+            }
+
+            if (!!storedRaid.shoutout) {
+                await client.experimental_sendShoutout(tags['room-id'], username).catch(() => {
+                    throw `Shoutout: Failed to perform /shoutout on raider. (Raider was possibly shouted-out already?!)`;
+                });
             }
 
             if (!storedRaid.loggable) return;
@@ -62,6 +72,9 @@ export const event = {
             await hook.send({ username: 'TwitchBot Log', embeds: [embed] });
         } catch (error) {
             logger.sysEvent.error(error);
+            if (error.startsWith('Shoutout:')) {
+                client.chat.say(channel, error);
+            }
         }
     },
 } as Event;

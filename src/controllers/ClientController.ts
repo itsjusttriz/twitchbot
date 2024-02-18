@@ -10,12 +10,18 @@ import { discordHooksDb } from './DatabaseController/DiscordWebhookDatabaseContr
 import { _ } from '../utils/index';
 import { Command, Event } from '../utils/interfaces';
 import { logger } from '../utils/Logger';
+import { RefreshingAuthProvider } from '@twurple/auth';
+import { ApiClient } from '@twurple/api';
 
 export class ClientController {
     static config: typeof config = config;
     static commands: Map<string, Command>;
     static discordWebhooks: Map<string, WebhookClient>;
-    private static _chat: Client;
+    static api: ApiClient;
+    static chat: Client;
+
+    private static _authProvider: Promise<RefreshingAuthProvider>;
+
     static {
         this.commands = new Map();
         this.discordWebhooks = new Map();
@@ -23,20 +29,41 @@ export class ClientController {
 
     private constructor() {}
 
-    static get chat(): Client {
-        return this._chat;
+    private static _getAuthProvider() {
+        return (this._authProvider ??= createAuthProvider());
+    }
+
+    static async createApiClient() {
+        this.api = new ApiClient({ authProvider: await this._getAuthProvider() });
+        return this.api;
     }
 
     static async createChatClient() {
-        this._chat = new Client({
+        this.chat = new Client({
             connection: {
                 reconnect: true,
                 secure: true,
             },
-            authProvider: await createAuthProvider(),
+            authProvider: await this._getAuthProvider(),
             channels: [],
         });
-        return this._chat;
+        return this.chat;
+    }
+
+    static async experimental_sendShoutout(channelId: string, username: string) {
+        try {
+            const user = await this.api.users.getUserByName(username.toLowerCase());
+            if (!user) {
+                throw new Error(`Failed to shoutout user as this user could not be found.`);
+            }
+
+            const self = await this.api.users.getUserByName(config.TWITCH_USERNAME);
+
+            await this.api.asUser(self.id, async (ctx) => await ctx.chat.shoutoutUser(channelId, user.id));
+        } catch (error) {
+            logger.sysDebug.error('experimental_sendShoutout', error.message);
+            throw error;
+        }
     }
 
     static async loadEvents() {
