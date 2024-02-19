@@ -33,7 +33,7 @@ export const event = {
                 }
             }
 
-            if (!!storedRaid.shoutout) {
+            if (!!storedRaid.shoutout && !!storedRaid.disabled) {
                 await client.experimental_sendShoutout(tags['room-id'], username).catch(() => {
                     throw `Shoutout: Failed to perform /shoutout on raider. (Raider was possibly shouted-out already?!)`;
                 });
