@@ -10,11 +10,13 @@ import { Command } from '../utils/interfaces';
         disabled: 0 | 1;
         loggable: 0 | 1;
         outcome: string;
+        shoutout: 0 | 1;
     }
  * !raids <channel> condition <number>
  * !raids <channel> disabled <boolean>
  * !raids <channel> loggable <boolean>
  * !raids <channel> outcome <string[]>
+ * !raids <channel> shoutout <boolean>
  */
 
 export const command = {
@@ -28,7 +30,7 @@ export const command = {
         try {
             const [channel, field, ...extraText] = opts.args as [string, string, ...string[]];
 
-            const editableFields = ['condition', 'disabled', 'loggable', 'outcome'];
+            const editableFields = ['condition', 'disabled', 'loggable', 'outcome', 'shoutout'];
             if (!editableFields.includes(field.toLowerCase())) {
                 await opts.chatClient.say(
                     opts.channel,
@@ -74,6 +76,19 @@ export const command = {
                         .catch(_.quickCatch);
                     if (!query || !query.changes) {
                         throw 'Failed to toggle logging for this raid event.';
+                    }
+                    break;
+                }
+                case 'shoutout': {
+                    if (!['true', 'false'].includes(extraText[0])) {
+                        throw `Invalid value: ${extraText[0]} - This must be 'true' or 'false'.`;
+                    }
+
+                    const query = await raidEventDb
+                        .toggleShoutout(_.dehashChannel(channel), extraText[0] === 'false')
+                        .catch(_.quickCatch);
+                    if (!query || !query.changes) {
+                        throw 'Failed to toggle shoutout for this raid event.';
                     }
                     break;
                 }

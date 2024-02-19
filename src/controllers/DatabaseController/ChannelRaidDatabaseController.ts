@@ -49,6 +49,15 @@ class ChannelRaidDatabaseController extends DatabaseControllerBase {
         return query.run({ $channel, $loggable: !$shouldDisable ? 1 : 0 });
     }
 
+    async toggleShoutout($channel: string, $shouldDisable: boolean) {
+        const query = await this._queryDb(
+            `UPDATE ${this.tableName}
+            SET shoutout = $shoutout
+            WHERE channel = $channel`
+        );
+        return query.run({ $channel, $shoutout: !$shouldDisable ? 1 : 0 });
+    }
+
     async updateOutcomeMessage($channel: string, $message: string) {
         const query = await this._queryDb(
             `UPDATE ${this.tableName} 
