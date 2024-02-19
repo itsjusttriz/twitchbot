@@ -19,7 +19,7 @@ async function createAuthProvider() {
         await fsp.writeFile(tokenFilePath, JSON.stringify(newTokenData, null, 4), 'utf8');
     });
 
-    authProvider.addUser('127667640', tokenData, ['chat']);
+    authProvider.addUser(config?.TWITCH_USER_ID, tokenData, ['chat']);
     return authProvider;
 }
 

@@ -6,6 +6,7 @@ class ClientConfigController {
     TWITCH_CLIENT_ID: string;
     TWITCH_CLIENT_SECRET: string;
     TWITCH_USERNAME: string;
+    TWITCH_USER_ID: string;
 
     COMMAND_PREFIX: string;
 
@@ -20,6 +21,7 @@ class ClientConfigController {
         this.TWITCH_CLIENT_ID = process.env.TWITCH_CLIENT_ID ?? '';
         this.TWITCH_CLIENT_SECRET = process.env.TWITCH_CLIENT_SECRET ?? '';
         this.TWITCH_USERNAME = process.env.TWITCH_USERNAME ?? '';
+        this.TWITCH_USER_ID = process.env.TWITCH_USER_ID ?? '';
 
         this.COMMAND_PREFIX = process.env.COMMAND_PREFIX ?? '';
 
