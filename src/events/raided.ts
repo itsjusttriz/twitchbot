@@ -4,6 +4,7 @@ import { raidEventDb } from '../controllers/DatabaseController/ChannelRaidDataba
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Event } from '../utils/interfaces/Event';
+import { DiscordWebhookUtils } from '../utils/DiscordWebhookUtils';
 
 export const event = {
     name: 'raided',
@@ -13,7 +14,7 @@ export const event = {
             const storedRaid = await raidEventDb.getRaidOutcome(_.dehashChannel(channel)).catch(_.quickCatch);
             if (!storedRaid) {
                 await raidEventDb.createRaidOutcome(_.dehashChannel(channel));
-                throw 'Failed to get raid outcome from database. Attempted to create one, instead.';
+                throw new Error('Failed to get raid outcome from database. Attempted to create one, instead.');
             }
 
             if (!!storedRaid.outcome) {
@@ -35,45 +36,38 @@ export const event = {
 
             if (!!storedRaid.shoutout && !storedRaid.disabled && viewers >= storedRaid.condition) {
                 await client.experimental_sendShoutout(tags['room-id'], username).catch(() => {
-                    throw `Shoutout: Failed to perform /shoutout on raider. (Raider was possibly shouted-out already?!)`;
+                    throw new Error(
+                        `Shoutout: Failed to perform /shoutout on raider. (Raider was possibly shouted-out already?!)`
+                    );
                 });
             }
 
             if (!storedRaid.loggable) return;
 
-            const hook = client.discordWebhooks.get('ijtdev');
-            if (!hook) {
-                throw 'Failed to get DiscordWebhookURL to send the raid event log to.';
-            }
-
-            const embed = new EmbedBuilder()
-                .setTitle(`Twitch Raid Event - ${channel}`)
-                .setDescription(
-                    [
+            await DiscordWebhookUtils.sendEmbedToServer('ijtdev', {
+                username: DiscordWebhookUtils.TWITCHBOT_LOG_TAG,
+                embed: {
+                    title: `Twitch Raid Event - ${channel}`,
+                    description: [
                         `This event response **${
                             !storedRaid.disabled && viewers >= storedRaid.condition ? 'WAS' : 'WAS NOT'
-                        }** triggered.\n`,
-                        ...Object.entries({
-                            Raider: username,
-                            isDisabled: `${!!storedRaid.disabled}`.toUpperCase(),
-                            Viewers: viewers,
-                            'Min. Viewers': storedRaid.condition,
-                        }).map(([key, value]) => {
-                            return `**${key}:** \` ${value} \``;
-                        }),
-
-                        // This one is seperate due to the formatting being different.
-                        `**Response(s):** \`\`\`\n${storedRaid.outcome.split('\\n').join('\n')}\n\`\`\``,
-                    ].join('\n')
-                )
-                // If the response SHOULD be sent & current viewers is above, or equal to, the min. viewers... be GREEN... otherwise, be RED.
-                .setColor(!storedRaid.disabled && viewers >= storedRaid.condition ? 'Green' : 'Red');
-
-            await hook.send({ username: 'TwitchBot Log', embeds: [embed] });
+                        }** triggered\n`,
+                        `**raider:** \` ${username} \``,
+                        `**isDisabled:** \` ${(!!storedRaid.disabled).toString().toUpperCase()} \``,
+                        `**viewers:** \` ${viewers} \``,
+                        `**min_viewers:** \` ${storedRaid.condition} \``,
+                        `**response(s):** \`\`\`\n${storedRaid.outcome.split('\\n').join('\n')}\n\`\`\``,
+                    ].join('\n'),
+                    color:
+                        !storedRaid.disabled && viewers >= storedRaid.condition
+                            ? parseInt('00a606', 16)
+                            : parseInt('a6001c', 16),
+                },
+            });
         } catch (error) {
             logger.sysEvent.error(error);
-            if (error.startsWith('Shoutout:')) {
-                client.chat.say(channel, error);
+            if (error.message.startsWith('Shoutout:')) {
+                client.chat.say(channel, error.message);
             }
         }
     },

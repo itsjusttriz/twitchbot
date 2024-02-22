@@ -2,6 +2,7 @@ import path from 'path';
 import express from 'express';
 import { client } from './controllers/ClientController';
 import { logger } from './utils/Logger';
+import { DiscordWebhookUtils } from './utils/DiscordWebhookUtils';
 
 const app = express();
 
@@ -18,9 +19,10 @@ app.listen(8082, async () => {
     const chat = await client.createChatClient();
     chat.connect();
 
+    await DiscordWebhookUtils.registerWebhooks();
+
     await client.createApiClient();
 
-    await client.loadDiscordWebhooks();
     await client.loadEvents();
     await client.loadCommands();
 });
