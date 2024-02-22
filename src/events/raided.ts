@@ -4,7 +4,7 @@ import { raidEventDb } from '../controllers/DatabaseController/ChannelRaidDataba
 import { _ } from '../utils';
 import { logger } from '../utils/Logger';
 import { Event } from '../utils/interfaces/Event';
-import { DiscordWebhookUtils } from '../utils/DiscordWebhookUtils';
+import { DiscordWebhookManager } from '../managers/DiscordWebhookManager';
 
 export const event = {
     name: 'raided',
@@ -44,8 +44,8 @@ export const event = {
 
             if (!storedRaid.loggable) return;
 
-            await DiscordWebhookUtils.sendEmbedToServer('ijtdev', {
-                username: DiscordWebhookUtils.TWITCHBOT_LOG_TAG,
+            await DiscordWebhookManager.sendEmbedToServer('ijtdev', {
+                username: DiscordWebhookManager.TWITCHBOT_LOG_TAG,
                 embed: {
                     title: `Twitch Raid Event - ${channel}`,
                     description: [

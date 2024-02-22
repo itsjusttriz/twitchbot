@@ -1,13 +1,13 @@
 import { EmbedBuilder, EmbedData, WebhookClient } from 'discord.js';
 import { discordHooksDb } from '../controllers/DatabaseController/DiscordWebhookDatabaseController';
-import { logger } from './Logger';
+import { logger } from '../utils/Logger';
 
 type SendWebhookMessageOptions = {
     username: string;
     embed: EmbedData;
 };
 
-export namespace DiscordWebhookUtils {
+export namespace DiscordWebhookManager {
     const _webhooks = new Map<string, WebhookClient>();
 
     export const TWITCHBOT_LOG_TAG = 'TwitchBot Log';

@@ -1,7 +1,7 @@
 import { ChatUserstate } from 'tmi.js';
 import { cpRedemptionsDb } from '../controllers/DatabaseController/ChannelPointsRedemptionsDatabaseController';
 import { _ } from '../utils';
-import { DiscordWebhookUtils } from '../utils/DiscordWebhookUtils';
+import { DiscordWebhookManager } from '../managers/DiscordWebhookManager';
 import { logger } from '../utils/Logger';
 import { Event } from '../utils/interfaces/Event';
 
@@ -35,8 +35,8 @@ export const event = {
 
             if (!storedReward.loggable) return;
 
-            await DiscordWebhookUtils.sendEmbedToServer('ijtdev', {
-                username: DiscordWebhookUtils.TWITCHBOT_LOG_TAG,
+            await DiscordWebhookManager.sendEmbedToServer('ijtdev', {
+                username: DiscordWebhookManager.TWITCHBOT_LOG_TAG,
                 embed: {
                     title: `Twitch Channel Point Redemption Event - ${channel}`,
                     description: [

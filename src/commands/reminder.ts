@@ -1,5 +1,5 @@
 import { _ } from '../utils';
-import { DiscordWebhookUtils } from '../utils/DiscordWebhookUtils';
+import { DiscordWebhookManager } from '../managers/DiscordWebhookManager';
 import { logger } from '../utils/Logger';
 import { Command } from '../utils/interfaces';
 
@@ -12,8 +12,8 @@ export const command = {
         const channel = _.dehashChannel(opts.channel);
 
         try {
-            await DiscordWebhookUtils.sendEmbedToServer(channel, {
-                username: DiscordWebhookUtils.TWITCH_REMINDER_TAG,
+            await DiscordWebhookManager.sendEmbedToServer(channel, {
+                username: DiscordWebhookManager.TWITCH_REMINDER_TAG,
                 embed: {
                     title: `@${opts.user}`,
                     description: `${opts.msgText} `,
