@@ -4,14 +4,12 @@ import fs from 'fs';
 import path from 'path';
 
 import { config } from './ClientConfigController';
-import { createAuthProvider } from './TwurpleAuthController';
-import { discordHooksDb } from './DatabaseController/DiscordWebhookDatabaseController';
 
-import { _ } from '../utils/index';
-import { Command, Event } from '../utils/interfaces';
-import { logger } from '../utils/Logger';
-import { RefreshingAuthProvider } from '@twurple/auth';
 import { ApiClient } from '@twurple/api';
+import { RefreshingAuthProvider } from '@twurple/auth';
+import { logger } from '../utils/Logger';
+import { TwurpleAuthUtils } from '../utils/TwurpleAuthUtils';
+import { Command, Event } from '../utils/interfaces';
 
 export class ClientController {
     static config: typeof config = config;
@@ -29,22 +27,18 @@ export class ClientController {
 
     private constructor() {}
 
-    private static _getAuthProvider() {
-        return (this._authProvider ??= createAuthProvider());
-    }
-
-    static async createApiClient() {
-        this.api = new ApiClient({ authProvider: await this._getAuthProvider() });
+    static createApiClient() {
+        this.api = new ApiClient({ authProvider: TwurpleAuthUtils.getAuthProvider() });
         return this.api;
     }
 
-    static async createChatClient() {
+    static createChatClient() {
         this.chat = new Client({
             connection: {
                 reconnect: true,
                 secure: true,
             },
-            authProvider: await this._getAuthProvider(),
+            authProvider: TwurpleAuthUtils.getAuthProvider(),
             channels: [],
         });
         return this.chat;
