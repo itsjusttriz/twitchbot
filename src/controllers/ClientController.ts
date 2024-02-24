@@ -100,6 +100,33 @@ export class ClientController {
             if (cmd.aliases?.length) for (const alias of cmd.aliases) client.commands.set(alias, cmd);
         }
     }
+
+    static async loadDiscordWebhooks() {
+        try {
+            this.discordWebhooks.clear();
+
+            const channels = await discordHooksDb.getAllWebhooks().catch(_.quickCatch);
+            if (!channels) {
+                throw 'Failed to get discord webhooks from database.';
+            }
+
+            for (const { channel, url } of Object.values(channels)) {
+                const hook = new WebhookClient({ url });
+                hook.rest.on('rateLimited', async (info) => {
+                    const timeLeft = info.timeToReset / 1000;
+                    await this.chat.say(
+                        this.config.DEBUG_CHANNEL,
+                        `@${this.config.DEBUG_CHANNEL} -> DiscordWebhook for channel (${channel}) has been rate-limited. Time left: ${timeLeft}`
+                    );
+                });
+                this.discordWebhooks.set(channel, hook);
+            }
+            return true;
+        } catch (error) {
+            logger.sysDebug.error(error);
+            return false;
+        }
+    }
 }
 
 export const client = ClientController;

@@ -1,9 +1,9 @@
+import { EmbedBuilder } from 'discord.js';
 import { ChatUserstate } from 'tmi.js';
 import { cpRedemptionsDb } from '../controllers/DatabaseController/ChannelPointsRedemptionsDatabaseController';
-import { _ } from '../utils';
-import { DiscordWebhookUtils } from '../utils/DiscordWebhookUtils';
 import { logger } from '../utils/Logger';
 import { Event } from '../utils/interfaces/Event';
+import { _ } from '../utils';
 
 export const event = {
     name: 'redeem',
@@ -35,17 +35,27 @@ export const event = {
 
             if (!storedReward.loggable) return;
 
-            await DiscordWebhookUtils.sendEmbedToServer('ijtdev', {
-                username: DiscordWebhookUtils.TWITCHBOT_LOG_TAG,
-                embed: {
-                    title: `Twitch Channel Point Redemption Event - ${channel}`,
-                    description: [
-                        `**user:** \` ${username} \``,
-                        `**reward_type:** \` ${!storedReward.title ? storedReward.id : storedReward.title} \``,
-                        `**message:** \`\`\`\n${message}\n\`\`\``,
-                    ].join('\n'),
-                },
-            });
+            const hook = client.discordWebhooks.get('ijtdev');
+            if (!hook) {
+                throw 'Failed to get DiscordWebhookURL to send the redemption log to.';
+            }
+
+            const embed = new EmbedBuilder()
+                .setTitle(`Twitch Channel Point Redemption Event - ${channel}`)
+                .setDescription(
+                    [
+                        // Assign similar formatting.
+                        ...Object.entries({
+                            User: username,
+                            'Reward Type': !storedReward.title ? storedReward.id : storedReward.title,
+                        }).map(([key, value]) => `**${key}:** \` ${value} \``),
+
+                        // This one is seperate due to the formatting being different.
+                        `**Message:** \`\`\`\n${message}\n\`\`\``,
+                    ].join('\n')
+                );
+
+            await hook.send({ username: 'TwitchBot Log', embeds: [embed] });
         } catch (error) {
             logger.sysEvent.error(error);
         }

@@ -1,5 +1,5 @@
+import { EmbedBuilder } from 'discord.js';
 import { _ } from '../utils';
-import { DiscordWebhookUtils } from '../utils/DiscordWebhookUtils';
 import { logger } from '../utils/Logger';
 import { Command } from '../utils/interfaces';
 
@@ -9,21 +9,25 @@ export const command = {
     permission: 'MODERATOR',
     requiresInput: true,
     run: async (opts) => {
-        const channel = _.dehashChannel(opts.channel);
-
         try {
-            await DiscordWebhookUtils.sendEmbedToServer(channel, {
-                username: DiscordWebhookUtils.TWITCH_REMINDER_TAG,
-                embed: {
-                    title: `@${opts.user}`,
-                    description: `${opts.msgText} `,
-                },
-            });
+            const channel = _.dehashChannel(opts.channel);
+            const hook = opts.client.discordWebhooks?.get(channel);
+            if (!hook) {
+                throw `No webhook found for channel (${channel})`;
+            }
 
-            await opts.chatClient.say(channel, 'Reminder sent.');
+            const embed = new EmbedBuilder().setTitle(`@${opts.user}`).setDescription(`${opts.msgText} `);
+
+            const sent = await hook.send({ username: `Twitch Reminder`, embeds: [embed] }).catch(_.quickCatch);
+            if (!sent) {
+                throw 'Failed to send reminder.';
+            }
+
+            await opts.chatClient.say(opts.channel, 'Reminder sent.');
+            logger.sysDebug.success(`Sent Reminder to DiscordWebhook with the following ID: (${hook.id})`);
         } catch (error) {
             logger.sysDebug.error(error);
-            await opts.chatClient.say(channel, error.message);
+            await opts.chatClient.say(opts.channel, error);
         }
     },
 } as Command;
